@@ -42,3 +42,8 @@ docs/doxygen_sqlite3.db
 
 # MacOS directory files
 .DS_Store
+
+# Example project files
+Ai-examples/**/sdkconfig
+Ai-examples/**/sdkconfig.old
+Ai-examples/**/build

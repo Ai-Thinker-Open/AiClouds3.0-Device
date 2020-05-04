@@ -9,7 +9,7 @@
 # This makefile requires the environment variable IDF_PATH to be set to the top-level esp-idf directory
 # where this file is located.
 #
-
+	
 .PHONY: build-components menuconfig defconfig all build clean all_binaries check-submodules size size-components size-files size-symbols list-components
 
 MAKECMDGOALS ?= all
@@ -666,7 +666,14 @@ TOOLCHAIN_GCC_VER := $(COMPILER_VERSION_STR)
 include $(IDF_PATH)/tools/toolchain_versions.mk
 
 ifndef IS_BOOTLOADER_BUILD
-$(info Toolchain path: $(TOOLCHAIN_PATH))
+# $(info Toolchain path: $(TOOLCHAIN_PATH))
+$(info ------------------------------------------------------------------------)
+$(info ------                                                          --------)
+$(info ------   Welcome To AiThinker IDE V1.5                          --------)
+$(info ------   Git Commit: a6fb921b38d6a2da582b2a1dd54acdcac66095f7   --------)
+$(info ------   SDK Version: v3.2-442-ga6fb921b-dirty                  --------)
+$(info ------                                                          --------)
+$(info ------------------------------------------------------------------------)
 endif
 
 ifdef TOOLCHAIN_COMMIT_DESC

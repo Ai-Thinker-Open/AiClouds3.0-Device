@@ -1,12 +1,48 @@
-# ESP8266 RTOS Software Development Kit
+# 关于  xClouds
 
-[![Documentation Status](https://readthedocs.com/projects/espressif-esp8266-rtos-sdk/badge/?version=latest)](https://docs.espressif.com/projects/esp8266-rtos-sdk/en/latest/?badge=latest)
+&nbsp;&nbsp;&nbsp;&nbsp; 在2018年底时候，我已经自学打通了天猫精灵音箱和小爱同学音箱同时控制一个 ESP8266，那时候我就开始专研服务器开发，自学攻破了数据库、php语言，再到了微信公众号的生态，我打通了这一整个的控制；
+
+&nbsp;&nbsp;&nbsp;&nbsp;  直到目前为止，我依然在走这条道路，但是随着开源其趋势不断影响，很多组织或个人奋力地做一些开源，源源不断的架构和代码封装，加快了我们程序员开发的效率，比如前端的最丰富的：
+
+&nbsp;&nbsp;&nbsp;&nbsp;  前端三大框架：
 
 
-# ** IMPORTANT NOTICE **
+| 框架| 简介|
+|--|--|
+|Angular|这个我真没接触|
+|React|包括现在的米家插件开发使用的是 ReactNative框架|
+|Vue|像京东小京鱼接入插件使用是 vue.js 框架，国内的 uni-app 跨平台移动开发框架|
 
-## About this repository
-A new branching model is applied to this repository, which consists of a master branch and release branches.
+
+&nbsp;&nbsp;&nbsp;&nbsp;  国内AI智能音箱一大崛起，也有很多优秀的企业一步一步崛起，像涂鸦就是典型的例子，一站式开发，对于很多小型家电传统公司接入AI音箱等智能控制，无疑就是一个 “菩萨” 般存在；
+
+&nbsp;&nbsp;&nbsp;&nbsp;  话说回来，类似这种平台，对于我们开发者有什么值得学习的地方呢？ 最熟悉宣传语就是：**全球部署，一接入可对接多语音平台。**
+
+&nbsp;&nbsp;&nbsp;&nbsp;  于是乎，我有个大胆的想法能否单独做这样的架构出来并开源出来：
+
+- **跨平台、开发快、全开源**的宗旨；
+- 微信公众号内 `airkiss` 配网和 `MQTT` 控制；
+- 微信小程序内 `smartConfig` 配网和 `MQTT` 控制；
+- 设备端要求：支持 `airkiss` 配网和 `MQTT` 协议即可；
+- 服务器端：有微信公众号业务和各云平台对接的业务，支持但不限于 天猫精灵、小爱同学、小度音箱、Alexa音箱等；
+- 扩展性强，支持用户二次开发，可私定义协议；
+- 三端开源：设备端、服务器端、前端；
+
+&nbsp;&nbsp;&nbsp;&nbsp;  现在，我有能力地公开这个架构，我想对于那些想学系统化的，或者电子diy爱好者，抑或是在校大学生，可参考学习，我的愿景就是：**xClouds能在国内物联网一枝独秀，助国内物联网发展；**
+
+&nbsp;&nbsp;&nbsp;&nbsp;  可能这会动了某些人的 “蛋糕”，但是只要有人支持我，会就坚持完善下去，今年新型冠状肺炎疫情的奋战，奉献自己的一分力量；
+
+
+# xClouds-devices for  ESP8266  开发框架
+
+> 当我们日复一日年复一年的搬砖的时候，你是否曾想过提升一下开发效率，如果一个  ```ESP8266``` 模板的项目摆在你的面前，你还会选择自己搭架构么
+
+> 但是搭建出一个好的架构并非易事，有多少人愿意选择去做，还有多少人选择努力去做好，可能寥寥无几，但是你今天看到的，正是你所想要的，一个真正能解决你开发新项目时最大痛点的架构工程，你不需要再麻木 Copy 原有旧项目的代码，只需改动少量代码就能得到想要的效果，你会发现开发新项目其实是一件很快乐的事；
+
+
+
+> 博客地址：[但愿人长久，搬砖不再有](https://www.jianshu.com/p/77dd326f21dc)
+
 
 ### 1. Master branch
 The master branch is an integration branch where bug fixes/features are gathered for compiling and functional testing.

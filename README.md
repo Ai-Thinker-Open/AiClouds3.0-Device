@@ -1,6 +1,10 @@
 # 关于  xClouds
 
-&nbsp;&nbsp;&nbsp;&nbsp; 在2018年底时候，我已经自学打通了天猫精灵音箱和小爱同学音箱同时控制一个 ESP8266，那时候我就开始专研服务器开发，自学攻破了数据库、php语言，再到了微信公众号的生态，我打通了这一整个的控制；
+&nbsp;&nbsp;&nbsp;&nbsp; 当我们日复一日年复一年的搬砖的时候，你是否曾想过提升一下开发效率，如果一个  ```IOT智能家具物联网``` 模板的项目摆在你的面前，你还会选择自己搭架构么？
+
+ &nbsp;&nbsp;&nbsp;&nbsp; 但是搭建出一个好的架构并非易事，有多少人愿意选择去做，还有多少人选择努力去做好，可能寥寥无几，但是你今天看到的，正是你所想要的，一个真正能解决你开发新项目时最大痛点的架构工程，你不需要再麻木 ``Copy`` 原有旧项目的代码，只需改动少量代码就能得到想要的效果，你会发现开发新项目其实是一件很快乐的事；
+
+&nbsp;&nbsp;&nbsp;&nbsp; 很幸运的是，在2018年底时候，我已经自学打通了天猫精灵音箱和小爱同学音箱同时控制一个 ESP8266，那时候我就开始专研服务器开发，自学攻破了数据库、php语言，再到了微信公众号的生态，我打通了这一整个的控制；
 
 &nbsp;&nbsp;&nbsp;&nbsp;  直到目前为止，我依然在走这条道路，但是随着开源其趋势不断影响，很多组织或个人奋力地做一些开源，源源不断的架构和代码封装，加快了我们程序员开发的效率，比如前端的最丰富的：
 
@@ -35,9 +39,8 @@
 
 # xClouds-devices for  ESP8266  开发框架
 
-> 当我们日复一日年复一年的搬砖的时候，你是否曾想过提升一下开发效率，如果一个  ```ESP8266``` 模板的项目摆在你的面前，你还会选择自己搭架构么
 
-> 但是搭建出一个好的架构并非易事，有多少人愿意选择去做，还有多少人选择努力去做好，可能寥寥无几，但是你今天看到的，正是你所想要的，一个真正能解决你开发新项目时最大痛点的架构工程，你不需要再麻木 Copy 原有旧项目的代码，只需改动少量代码就能得到想要的效果，你会发现开发新项目其实是一件很快乐的事；
+
 
 
 
@@ -140,71 +143,3 @@ Here are couple of tips on navigation and use of `menuconfig`:
 
 Once done configuring, press Escape multiple times to exit and say "Yes" to save the new configuration when prompted.
 
-## Compiling the Project
-
-`make all`
-
-... will compile app based on the config.
-
-## Flashing the Project
-
-When `make all` finishes, it will print a command line to use esptool.py to flash the chip. However you can also do this from make by running:
-
-`make flash`
-
-This will flash the entire project (app, bootloader and init data bin) to a new chip. The settings for serial port flashing can be configured with `make menuconfig`.
-
-You don't need to run `make all` before running `make flash`, `make flash` will automatically rebuild anything which needs it.
-
-## Viewing Serial Output
-
-The `make monitor` target uses the [idf_monitor tool](https://esp-idf.readthedocs.io/en/latest/get-started/idf-monitor.html) to display serial output from the ESP32. idf_monitor also has a range of features to decode crash output and interact with the device. [Check the documentation page for details](https://esp-idf.readthedocs.io/en/latest/get-started/idf-monitor.html).
-
-Exit the monitor by typing Ctrl-].
-
-To flash and monitor output in one pass, you can run:
-
-`make flash monitor`
-
-## Compiling & Flashing Just the App
-
-After the initial flash, you may just want to build and flash just your app, not the bootloader and init data bin:
-
-* `make app` - build just the app.
-* `make app-flash` - flash just the app.
-
-`make app-flash` will automatically rebuild the app if it needs it.
-
-(In normal development there's no downside to reflashing the bootloader and init data bin each time, if they haven't changed.)
-
-> Note:
-> Recommend to use these 2 commands if you have flashed bootloader and init data bin.
-
-## Parallel Builds
-
-ESP8266_RTOS_SDK supports compiling multiple files in parallel, so all of the above commands can be run as `make -jN` where `N` is the number of parallel make processes to run (generally N should be equal to or one more than the number of CPU cores in your system.)
-
-Multiple make functions can be combined into one. For example: to build the app & bootloader using 5 jobs in parallel, then flash everything, and then display serial output from the ESP32 run:
-
-```
-make -j5 app-flash monitor
-```
-
-## Erasing Flash
-
-The `make flash` target does not erase the entire flash contents. However it is sometimes useful to set the device back to a totally erased state. To erase the entire flash, run `make erase_flash`.
-
-This can be combined with other targets, ie `make erase_flash flash` will erase everything and then re-flash the new app, bootloader and init data bin.
-
-## Updating ESP8266_RTOS_SDK
-
-After some time of using ESP8266_RTOS_SDK-IDF, you may want to update it to take advantage of new features or bug fixes. The simplest way to do so is by deleting existing `ESP8266_RTOS_SDK` folder and cloning it again.
-
-Another solution is to update only what has changed. This method is useful if you have a slow connection to GitHub. To do the update run the following commands::
-
-```
-cd ~/esp/ESP8266_RTOS_SDK
-git pull
-```
-
-The ``git pull`` command is fetching and merging changes from ESP8266_RTOS_SDK repository on GitHub.

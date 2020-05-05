@@ -9,28 +9,34 @@
 #include "esp_log.h"
 #include "esp_netif.h"
 #include "esp_event.h"
-#include "protocol_examples_common.h"
 #include "nvs.h"
 #include "nvs_flash.h"
-
 #include "lwip/sockets.h"
 #include "lwip/dns.h"
 #include "lwip/netdb.h"
-
+#include "airkiss.h"
 #include "mqtt_client.h"
 
-static const char *TAG = "MQTT_EXAMPLE";
-
-
+static const char *TAG = "AIThinkerDemo Num1";
 
 
 /**
- *    »ùÓÚ esp-idf esp8266Ð¾Æ¬ rtos3.0 sdk ÀÖöÎÃ»×öÎ¢ÐÅ½ü³¡·¢ÏÖµÄ¹¦ÄÜ£¬ÓÚÊÇ¶¯¶¯ÊÖÖ¸×öÆðÀ´£¡
- *    ÕâÊÇÎ¢ÐÅairkissÅäÍøÒÔ¼°½ü³¡·¢ÏÖµÄ¹¦ÄÜµÄdemoÊ¾·¶£¬Ç×²â¿ÉÒÔÅäÍø³É¹¦ÒÔ¼°½ü³¡·¢ÏÖ£¡
- *    ÓÐÈÎºÎ¼¼ÊõÎÊÌâÓÊÏä£º 870189248@qq.com
- *    @team: Ai-Thinker Open Team °²ÐÅ¿É¿ªÔ´ÍÅ¶Ó-°ë¿ÅÐÄÔà
+ *    åŸºäºŽ esp-idf esp8266èŠ¯ç‰‡ rtos3.0 sdk å¼€å‘ï¼Œå…±å‹‰ï¼
+ * 
+ *    è¿™æ˜¯esp-touchæˆ– å¾®ä¿¡airkissé…ç½‘ä»¥åŠè¿‘åœºå‘çŽ°çš„åŠŸèƒ½å’Œè¿žæŽ¥MQTTæœåŠ¡å™¨çš„çš„demoç¤ºèŒƒï¼
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ *    æœ‰ä»»ä½•æŠ€æœ¯é—®é¢˜é‚®ç®±ï¼š 870189248@qq.com
+ *    @team: Ai-Thinker Open Team å®‰ä¿¡å¯å¼€æºå›¢é˜Ÿ-åŠé¢—å¿ƒè„
  *
  **/
+
+
 static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event) {
 	esp_mqtt_client_handle_t client = event->client;
 	int msg_id;
@@ -97,10 +103,6 @@ void app_main() {
 	ESP_LOGI(TAG, "[APP] Free memory: %d bytes", esp_get_free_heap_size());
 	ESP_LOGI(TAG, "[APP] IDF version: %s", esp_get_idf_version());
 
-	ESP_ERROR_CHECK(esp_netif_init());
-	ESP_ERROR_CHECK(esp_event_loop_create_default());
-
-	ESP_ERROR_CHECK(example_connect());
 
 	mqtt_app_start();
 }

@@ -95,6 +95,11 @@ bool isConnect2Server = false;
 
 char udp_msg[512]; //固定的本地广播数据
 
+/* 
+ * @Description: 上报数据到服务器
+ * @param: null
+ * @return: 
+*/ 
 static void post_data_to_clouds()
 {
 
@@ -125,6 +130,12 @@ static void post_data_to_clouds()
 	cJSON_Delete(pRoot);
 }
 
+
+/* 
+ * @Description: 解析下发数据的队列逻辑处理
+ * @param: null
+ * @return: 
+*/ 
 void Task_ParseJSON(void *pvParameters)
 {
 	printf("[SY] Task_ParseJSON_Message creat ... \n");
@@ -170,7 +181,11 @@ void Task_ParseJSON(void *pvParameters)
 		cJSON_Delete(pJsonRoot);
 	}
 }
-
+/* 
+ * @Description: MQTT服务器的下发消息回调
+ * @param: 
+ * @return: 
+*/ 
 esp_err_t MqttCloudsCallBack(esp_mqtt_event_handle_t event)
 {
 	int msg_id;
@@ -221,11 +236,16 @@ esp_err_t MqttCloudsCallBack(esp_mqtt_event_handle_t event)
 	return ESP_OK;
 }
 
+/* 
+ * @Description: MQTT参数连接的配置
+ * @param: 
+ * @return: 
+*/ 
 void TaskXMqttRecieve(void *p)
 {
 	//连接的配置参数
 	esp_mqtt_client_config_t mqtt_cfg = {
-		.host = "www.xuhongv.com", //连接的域名 ，请务必修改为您的
+		.host = "www.xuhong.com", //连接的域名 ，请务必修改为您的
 		.port = 1883,			   //端口，请务必修改为您的
 		.username = "admin",	   //用户名，请务必修改为您的
 		.password = "xuhong123",   //密码，请务必修改为您的
@@ -241,6 +261,11 @@ void TaskXMqttRecieve(void *p)
 	vTaskDelete(NULL);
 }
 
+/* 
+ * @Description:  微信配网近场发现，可注释不要
+ * @param: 
+ * @return: 
+*/ 
 static void TaskCreatSocket(void *pvParameters)
 {
 
@@ -339,7 +364,12 @@ static void TaskCreatSocket(void *pvParameters)
 	}
 }
 
-bool startAirkissTask()
+/* 
+ * @Description: 微信配网
+ * @param: 
+ * @return: 
+*/
+ bool startAirkissTask()
 {
 
 	ESP_LOGI(TAG, "startAirkissTask");
@@ -358,6 +388,12 @@ bool startAirkissTask()
 	}
 }
 
+/* 
+ * @Description:  系统的wifi协议栈回调
+ * @param: 
+ * @param: 
+ * @return: 
+*/ 
 static esp_err_t event_handler(void *ctx, system_event_t *event)
 {
 	switch (event->event_id)
@@ -400,6 +436,12 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 	return ESP_OK;
 }
 
+/* 
+ * @Description: 配网回调
+ * @param: 
+ * @param: 
+ * @return: 
+*/ 
 static void sc_callback(smartconfig_status_t status, void *pdata)
 {
 	switch (status)
@@ -446,6 +488,11 @@ static void sc_callback(smartconfig_status_t status, void *pdata)
 	}
 }
 
+/* 
+ * @Description:  一键配网
+ * @param: 
+ * @return: 
+*/ 
 void TaskSmartConfigAirKiss2Net(void *parm)
 {
 	EventBits_t uxBits;

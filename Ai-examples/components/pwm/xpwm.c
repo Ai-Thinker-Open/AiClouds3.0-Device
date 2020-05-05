@@ -86,9 +86,8 @@ esp_err_t pwm_init_data()
         if (nvs_get_blob(out_handle, NVS_TABLE_NAME, &dev_status, &length) != ESP_OK)
             return ESP_FAIL;
 
-        printf(" outBrightnessChannle : %d , outColortempChannle %d \n", dev_status.Brightness, dev_status.Colortemp);
-        printf(" Red : %d , Green %d, Green %d \n", dev_status.Red, dev_status.Green, dev_status.Blue);
-
+       //   printf(" outBrightnessChannle : %d , outColortempChannle %d \n", dev_status.Brightness, dev_status.Colortemp);
+       //   printf(" Red : %d , Green %d, Green %d \n", dev_status.Red, dev_status.Green, dev_status.Blue);
         //printf(" ColorMode : %d  \n", dev_status.ColorMode);
 
         nvs_close(out_handle);
@@ -106,7 +105,7 @@ esp_err_t light_driver_set_ctb(const int brightness, const int color_temperature
     int outBrightnessChannle = 8192 * outCW / 100;
     int outColortempChannle = 8192 * outWW / 100;
 
-    printf(" light_driver_set_ctb=> outBrightnessChannle : %d , outColortempChannle %d \n", outBrightnessChannle, outColortempChannle);
+    //printf(" light_driver_set_ctb=> outBrightnessChannle : %d , outColortempChannle %d \n", outBrightnessChannle, outColortempChannle);
 
     dev_status.Brightness = brightness;
     dev_status.Colortemp = color_temperature;
@@ -153,8 +152,6 @@ esp_err_t light_driver_set_ctb(const int brightness, const int color_temperature
         }
         if (nvs_set_blob(out_handle, NVS_TABLE_NAME, &dev_status, sizeof(dev_status)) != ESP_OK)
             printf("Save Struct  Fail !!  \n");
-        else
-            printf("Save Struct  ok !!  \n");
         //提交下！相当于软件面板的 “应用” 按钮，并没关闭面板！
         nvs_commit(out_handle);
         nvs_close(out_handle);
@@ -291,8 +288,6 @@ esp_err_t light_driver_set_rgb(const uint8_t red, const uint8_t green, const uin
         }
         if (nvs_set_blob(out_handle, NVS_TABLE_NAME, &dev_status, sizeof(dev_status)) != ESP_OK)
             printf("Save Struct  Fail !!  \n");
-        else
-            printf("Save Struct  ok !!  \n");
         //提交下！相当于软件面板的 “应用” 按钮，并没关闭面板！
         nvs_commit(out_handle);
         nvs_close(out_handle);

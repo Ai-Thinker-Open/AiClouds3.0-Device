@@ -1,61 +1,65 @@
-# ESP-MQTT sample application
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
 
-This example connects to the broker URI selected using `make menuconfig` (using mqtt tcp transport) and as a demonstration subscribes/unsubscribes and send a message on certain topic.
-Note: If the URI equals `FROM_STDIN` then the broker address is read from stdin upon application startup (used for testing)
+ *    基于 esp-idf esp8266芯片 rtos3.0 sdk 开发，共勉！
+ * 
+ *   这是esp-touch或 微信airkiss配网以及近场发现的功能和连接MQTT服务器的的demo示范！
+ * 
+ *   按键接线 GPIO0引脚下降沿触发，LED的正极接GPIO12，负极接GND；
+ *   按键短按 ，改变灯具状态并上报状态到服务器；
+ *   按键长按 ，进去配网模式，搜索 "安信可科技" 微信公众号点击 WiFi配置；
+ *
+ *    有任何技术问题邮箱： 870189248@qq.com
+ *    @team: Ai-Thinker Open Team 安信可开源团队-半颗心脏
+ 
 
-It uses ESP-MQTT library which implements mqtt client to connect to mqtt broker.
+## 上报指令
 
-## How to use example
-
-### Hardware Required
-
-This example can be executed on any ESP32 board, the only required interface is WiFi and connection to internet.
-
-### Configure the project
-
-```
-make menuconfig
-```
-
-* Set serial port under Serial Flasher Options.
-
-* Set ssid and password for the board to connect to AP.
-
-### Build and Flash
-
-Build the project and flash it to the board, then run monitor tool to view serial output:
+- 主题：/aithinker/${设备mac地址}/devPub
+- 设备上报关灯：
 
 ```
-make -j4 flash monitor
+{
+	"header": {
+		"type": "aithinker",
+		"mac": "60019421dc59"
+	},
+	"attr": [{
+		"name": "powerstate",
+		"value": "off"
+	}]
+}
 ```
 
-(To exit the serial monitor, type ``Ctrl-]``.)
-
-See the Getting Started Guide for full steps to configure and use ESP-IDF to build projects.
-
-## Example Output
+- 主题：/aithinker/${设备mac地址}/devPub
+- 设备上报开灯：
 
 ```
-I (3714) event: sta ip: 192.168.0.139, mask: 255.255.255.0, gw: 192.168.0.2
-I (3714) system_api: Base MAC address is not set, read default base MAC address from BLK0 of EFUSE
-I (3964) MQTT_CLIENT: Sending MQTT CONNECT message, type: 1, id: 0000
-I (4164) MQTT_EXAMPLE: MQTT_EVENT_CONNECTED
-I (4174) MQTT_EXAMPLE: sent publish successful, msg_id=41464
-I (4174) MQTT_EXAMPLE: sent subscribe successful, msg_id=17886
-I (4174) MQTT_EXAMPLE: sent subscribe successful, msg_id=42970
-I (4184) MQTT_EXAMPLE: sent unsubscribe successful, msg_id=50241
-I (4314) MQTT_EXAMPLE: MQTT_EVENT_PUBLISHED, msg_id=41464
-I (4484) MQTT_EXAMPLE: MQTT_EVENT_SUBSCRIBED, msg_id=17886
-I (4484) MQTT_EXAMPLE: sent publish successful, msg_id=0
-I (4684) MQTT_EXAMPLE: MQTT_EVENT_SUBSCRIBED, msg_id=42970
-I (4684) MQTT_EXAMPLE: sent publish successful, msg_id=0
-I (4884) MQTT_CLIENT: deliver_publish, message_length_read=19, message_length=19
-I (4884) MQTT_EXAMPLE: MQTT_EVENT_DATA
-TOPIC=/topic/qos0
-DATA=data
-I (5194) MQTT_CLIENT: deliver_publish, message_length_read=19, message_length=19
-I (5194) MQTT_EXAMPLE: MQTT_EVENT_DATA
-TOPIC=/topic/qos0
-DATA=data
+{
+	"header": {
+		"type": "aithinker",
+		"mac": "60019421dc59"
+	},
+	"attr": [{
+		"name": "powerstate",
+		"value": "on"
+	}]
+}
+```
+## 控制指令
+
+- 控制开灯
+- 主题：/aithinker/${设备mac地址}/devSub
+
+```
+{
+	"msg": 1
+}
+```
+
+- 控制关灯
+- 主题：/aithinker/${设备mac地址}/devSub
+
+```
+{
+	"msg": 0
+}
 ```

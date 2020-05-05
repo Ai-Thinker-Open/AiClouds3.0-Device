@@ -31,6 +31,7 @@
 #include "cJSON.h"
 #include "rom/ets_sys.h"
 #include "router.h"
+#include "button.h"
 #include "esp_ota_ops.h"
 #include "esp_http_client.h"
 #include "esp_https_ota.h"
@@ -38,26 +39,22 @@
 #include "lwip/sockets.h"
 #include "lwip/sys.h"
 #include <lwip/netdb.h>
+#include "xpwm.h"
 
-void smartconfig_example_task(void *parm);
-static void post_data_to_clouds(esp_mqtt_client_handle_t client, char *topic);
+void TaskSmartConfigAirKiss2Net(void *parm);
 
-/**
- *    基于 esp-idf esp8266芯片 rtos3.0 sdk 开发，共勉！
- * 
- *    这是esp-touch或 微信airkiss配网以及近场发现的功能和连接MQTT服务器的的demo示范！
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- *    有任何技术问题邮箱： 870189248@qq.com
- *    @team: Ai-Thinker Open Team 安信可开源团队-半颗心脏
- *
- **/
 
+//  *    基于 esp-idf esp8266芯片 rtos3.0 sdk 开发，共勉！
+//  * 
+//  *   这是esp-touch或 微信airkiss配网以及近场发现的功能和连接MQTT服务器的的demo示范！
+//  * 
+//  *   按键接线 GPIO0引脚下降沿触发，LED的正极接GPIO12，负极接GND；
+//  *   按键短按 ，改变灯具状态并上报状态到服务器；
+//  *   按键长按 ，进去配网模式，搜索 "安信可科技" 微信公众号点击 WiFi配置；
+//  *
+//  *    有任何技术问题邮箱： support@aithinker.com
+//  *    @team: Ai-Thinker Open Team 安信可开源团队-半颗心脏 xuhongv@aithinker.com
+ 
 typedef struct __User_data
 {
 	char allData[1024];
@@ -66,34 +63,29 @@ typedef struct __User_data
 
 User_data user_data;
 
-//当前是否配网模式
-int flagNet = 0;
-
+static const char *TAG = "AIThinkerDemo Log";
 static EventGroupHandle_t wifi_event_group;
 static const int CONNECTED_BIT = BIT0;
 static const int ESPTOUCH_DONE_BIT = BIT1;
 static const int AIRKISS_DONE_BIT = BIT2;
-
 static xTaskHandle handleLlocalFind = NULL;
 static xTaskHandle handleMqtt = NULL;
 static xQueueHandle ParseJSONQueueHandler = NULL; //解析json数据的队列
 static xTaskHandle mHandlerParseJSON = NULL;	  //任务队列
 
-static const char *TAG = "AIThinkerDemo Num1";
-
-
-//当前固件版本
-#define FW_VERSION "1"
-
 #define BUF_SIZE (1024)
 //近场发现自定义消息
 uint8_t deviceInfo[100] = {};
-
-//设备信息
-#define DEVICE_TYPE "rgbLight"
+//当前是否配网模式
+int flagNet = 0;
 char deviceUUID[17];
 char MqttTopicSub[30], MqttTopicPub[30];
 int sock_fd;
+
+//按键定义
+#define BUTTON_GPIO 0
+//设备信息
+#define DEVICE_TYPE "aithinker"
 
 //mqtt
 static esp_mqtt_client_handle_t client;
@@ -103,43 +95,7 @@ bool isConnect2Server = false;
 
 char udp_msg[512]; //固定的本地广播数据
 
-void Task_ParseJSON(void *pvParameters)
-{
-	printf("[SY] Task_ParseJSON_Message creat ... \n");
-	while (1)
-	{
-		struct __User_data *pMqttMsg;
-
-		printf("[%d] Task_ParseJSON_Message xQueueReceive wait ... \n", esp_get_free_heap_size());
-		xQueueReceive(ParseJSONQueueHandler, &pMqttMsg, portMAX_DELAY);
-		pMqttMsg->allData[pMqttMsg->dataLen] = '/0';
-		printf("[SY] xQueueReceive  data [%s] \n", pMqttMsg->allData);
-
-		////首先整体判断是否为一个json格式的数据
-		cJSON *pJsonRoot = cJSON_Parse(pMqttMsg->allData);
-		//如果是否json格式数据
-		if (pJsonRoot == NULL)
-		{
-			printf("[SY] Task_ParseJSON_Message xQueueReceive not json ... \n");
-			goto __cJSON_Delete;
-		}
-
-		cJSON *pJSON_Item = cJSON_GetObjectItem(pJsonRoot, "item");
-
-		if (!pJSON_Item)
-		{
-			printf("[SY] Task_ParseJSON_Message pJSON_Header not json ... \n");
-			goto __cJSON_Delete;
-		}
-
-		post_data_to_clouds(client, MqttTopicPub);
-
-	__cJSON_Delete:
-		cJSON_Delete(pJsonRoot);
-	}
-}
-
-static void post_data_to_clouds(esp_mqtt_client_handle_t client, char *topic)
+static void post_data_to_clouds()
 {
 
 	if (!isConnect2Server)
@@ -151,21 +107,68 @@ static void post_data_to_clouds(esp_mqtt_client_handle_t client, char *topic)
 
 	/* add 1st car to cars array */
 	cJSON_AddStringToObject(pHeader, "type", (DEVICE_TYPE));
-	cJSON_AddStringToObject(pHeader, "fw", (FW_VERSION));
 	cJSON_AddStringToObject(pHeader, "mac", deviceUUID);
 
 	//开关
 	cJSON *pAttrPower = cJSON_CreateObject();
 	cJSON_AddStringToObject(pAttrPower, "name", "powerstate");
-	cJSON_AddStringToObject(pAttrPower, "value", "on");
+	cJSON_AddStringToObject(pAttrPower, "value", light_driver_get_switch() ? "on" : "off");
 	cJSON_AddItemToArray(pAttr, pAttrPower);
 
+	cJSON_AddItemToObject(pRoot, "header", pHeader);
+	cJSON_AddItemToObject(pRoot, "attr", pAttr);
 	char *s = cJSON_Print(pRoot);
-	ESP_LOGI(TAG, "post_data_to_clouds topic end : %s", topic);
+	ESP_LOGI(TAG, "post_data_to_clouds topic end : %s", MqttTopicPub);
 	ESP_LOGI(TAG, "post_data_to_clouds payload : %s", s);
-	//esp_mqtt_client_publish(client, topic, s, strlen(s), 1, 0);
+	esp_mqtt_client_publish(client, MqttTopicPub, s, strlen(s), 1, 0);
 	cJSON_free((void *)s);
 	cJSON_Delete(pRoot);
+}
+
+void Task_ParseJSON(void *pvParameters)
+{
+	printf("[SY] Task_ParseJSON_Message creat ... \n");
+	while (1)
+	{
+		struct __User_data *pMqttMsg;
+
+		printf("[%d] Task_ParseJSON_Message xQueueReceive wait ... \n", esp_get_free_heap_size());
+		xQueueReceive(ParseJSONQueueHandler, &pMqttMsg, portMAX_DELAY);
+
+		////首先整体判断是否为一个json格式的数据
+		cJSON *pJsonRoot = cJSON_Parse(pMqttMsg->allData);
+		//如果是否json格式数据
+		if (pJsonRoot == NULL)
+		{
+			printf("[SY] Task_ParseJSON_Message xQueueReceive not json ... \n");
+			goto __cJSON_Delete;
+		}
+
+		cJSON *pJSON_Item = cJSON_GetObjectItem(pJsonRoot, "msg");
+
+		if (!pJSON_Item)
+		{
+			//协议不正确
+			ESP_LOGE(TAG, " pJSON_Item not json ... \n");
+			goto __cJSON_Delete;
+		}
+
+		if (cJSON_IsNumber(pJSON_Item))
+		{
+			light_driver_set_switch(pJSON_Item->valueint);
+		}
+		else
+		{
+			//协议不正确
+			ESP_LOGE(TAG, " cJSON_IsNumber  not json ... \n");
+			goto __cJSON_Delete;
+		}
+
+		post_data_to_clouds();
+
+	__cJSON_Delete:
+		cJSON_Delete(pJsonRoot);
+	}
 }
 
 esp_err_t MqttCloudsCallBack(esp_mqtt_event_handle_t event)
@@ -203,6 +206,7 @@ esp_err_t MqttCloudsCallBack(esp_mqtt_event_handle_t event)
 		//服务器下发消息到本地成功接收回调
 	case MQTT_EVENT_DATA:
 	{
+		ESP_LOGI(TAG, " xQueueReceive  data [%s] \n", event->data);
 		//发送数据到队列
 		struct __User_data *pTmper;
 		sprintf(user_data.allData, "%s", event->data);
@@ -221,10 +225,10 @@ void TaskXMqttRecieve(void *p)
 {
 	//连接的配置参数
 	esp_mqtt_client_config_t mqtt_cfg = {
-		.host = "www.xuhong.com", //连接的域名 ，请务必修改为您的
-		.port = 1883,			  //端口，请务必修改为您的
-		.username = "admin",	  //用户名，请务必修改为您的
-		.password = "xuhong123",  //密码，请务必修改为您的
+		.host = "www.xuhongv.com", //连接的域名 ，请务必修改为您的
+		.port = 1883,			   //端口，请务必修改为您的
+		.username = "admin",	   //用户名，请务必修改为您的
+		.password = "xuhong123",   //密码，请务必修改为您的
 		.client_id = deviceUUID,
 		.event_handle = MqttCloudsCallBack, //设置回调函数
 		.keepalive = 120,					//心跳
@@ -359,7 +363,7 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 	switch (event->event_id)
 	{
 	case SYSTEM_EVENT_STA_START:
-		xTaskCreate(smartconfig_example_task, "smartconfig_example_task", 1024 * 2, NULL, 3, NULL);
+		xTaskCreate(TaskSmartConfigAirKiss2Net, "TaskSmartConfigAirKiss2Net", 1024 * 2, NULL, 3, NULL);
 		break;
 	case SYSTEM_EVENT_STA_GOT_IP:
 	{
@@ -442,32 +446,35 @@ static void sc_callback(smartconfig_status_t status, void *pdata)
 	}
 }
 
-void smartconfig_example_task(void *parm)
+void TaskSmartConfigAirKiss2Net(void *parm)
 {
 	EventBits_t uxBits;
-
+	//判别是否自动连接
 	bool isAutoConnect = routerStartConnect();
-
+	//是的，则不进去配网模式，已连接路由器
 	if (isAutoConnect)
 	{
+		ESP_LOGI(TAG, "Next connectting router.");
 		vTaskDelete(NULL);
 	}
+	//否，进去配网模式
 	else
 	{
 		ESP_LOGI(TAG, "into smartconfig mode");
 		ESP_ERROR_CHECK(esp_smartconfig_set_type(SC_TYPE_ESPTOUCH_AIRKISS));
 		ESP_ERROR_CHECK(esp_smartconfig_start(sc_callback));
 	}
-
+	//阻塞等待配网完成结果
 	while (1)
 	{
 		uxBits = xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT | ESPTOUCH_DONE_BIT | AIRKISS_DONE_BIT, true, false, portMAX_DELAY);
-
+		// 微信公众号配网完成
 		if (uxBits & AIRKISS_DONE_BIT)
 		{
 			ESP_LOGI(TAG, "smartconfig over , start find device");
 			esp_smartconfig_stop();
 
+			//把设备信息通知到微信公众号
 			if (handleLlocalFind == NULL)
 				xTaskCreate(TaskCreatSocket, "TaskCreatSocket", 1024 * 2, NULL, 6, &handleLlocalFind);
 
@@ -475,7 +482,7 @@ void smartconfig_example_task(void *parm)
 
 			vTaskDelete(NULL);
 		}
-
+		// smartconfig配网完成
 		if (uxBits & ESPTOUCH_DONE_BIT)
 		{
 			ESP_LOGI(TAG, "smartconfig over , but don't find device by airkiss...");
@@ -483,6 +490,40 @@ void smartconfig_example_task(void *parm)
 			vTaskDelete(NULL);
 		}
 	}
+}
+
+//短按函数
+static void ButtonShortPressCallBack(void *arg)
+{
+	ESP_LOGI(TAG, "ButtonShortPressCallBack  esp_get_free_heap_size(): %d ", esp_get_free_heap_size());
+	light_driver_set_switch(!light_driver_get_switch());
+	post_data_to_clouds();
+}
+//长按函数
+static void ButtonLongPressCallBack(void *arg)
+{
+	ESP_LOGI(TAG, "ButtonLongPressCallBack  esp_get_free_heap_size(): %d ", esp_get_free_heap_size());
+	light_driver_set_cycle(2);
+}
+
+/**
+ * @description: 按键驱动
+ * @param {type} 
+ * @return: 
+ */
+void TaskButton(void *pvParameters)
+{
+	//定义一个 gpio 下降沿触发: GPIO口，回调函数个数0开始，下降沿有效
+	button_handle_t btn_handle = button_dev_init(BUTTON_GPIO, 1, BUTTON_ACTIVE_LOW);
+	// 50ms按钮短按
+	// BUTTON_PUSH_CB 表示按下就触发回调函数，如果设置了长按，这个依然会同时触发！
+	// BUTTON_RELEASE_CB 表示释放才回调，如果设置了长按，这个依然会同时触发！
+	// BUTTON_TAP_CB 此选项释放才回调，如果设置了长按，这个不会同时触发！
+	button_dev_add_tap_cb(BUTTON_TAP_CB, ButtonShortPressCallBack, "TAP", 50 / portTICK_PERIOD_MS, btn_handle);
+	// 设置长按 2s后触发
+	button_dev_add_press_cb(0, ButtonLongPressCallBack, NULL, 2000 / portTICK_PERIOD_MS, btn_handle);
+
+	vTaskDelete(NULL);
 }
 
 /******************************************************************************
@@ -516,15 +557,21 @@ void app_main(void)
 	esp_read_mac(mac, ESP_MAC_WIFI_STA);
 	sprintf(deviceUUID, "%02x%02x%02x%02x%02x%02x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 	sprintf((char *)deviceInfo, "{\"device\":\"%s\",\"mac\":\"%s\"}", DEVICE_TYPE, deviceUUID);
+	//组建MQTT订阅的主题
 	sprintf(MqttTopicSub, "/%s/%s/devSub", DEVICE_TYPE, deviceUUID);
+	//组建MQTT推送的主题
 	sprintf(MqttTopicPub, "/%s/%s/devPub", DEVICE_TYPE, deviceUUID);
 
 	ESP_LOGI(TAG, "flagNet: %d", flagNet);
-	ESP_LOGI(TAG, "FW_VERSION: %s", FW_VERSION);
 	ESP_LOGI(TAG, "deviceUUID: %s", deviceUUID);
 	ESP_LOGI(TAG, "deviceInfo: %s", deviceInfo);
 	ESP_LOGI(TAG, "MqttTopicSub: %s", MqttTopicSub);
 	ESP_LOGI(TAG, "MqttTopicPub: %s", MqttTopicPub);
+
+	//外设初始化
+	xTaskCreate(TaskButton, "TaskButton", 1024, NULL, 6, NULL);
+	pwm_init_data();
+	light_driver_set_switch(0);
 
 	tcpip_adapter_init();
 	wifi_event_group = xEventGroupCreate();

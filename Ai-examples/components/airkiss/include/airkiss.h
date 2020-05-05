@@ -1,43 +1,43 @@
-/*
- * airkiss.h
- *
- *  Created on: 2015-1-26
- *      Author: peterfan
- */
-
 #ifndef AIRKISS_H_
 #define AIRKISS_H_
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
+//airkiss
+#define COUNTS_BOACAST 30            //发包次数，微信建议20次以上
+#define ACCOUNT_ID "gh_4248324a4d02" //微信公众号
+#define LOCAL_UDP_PORT 12476         //固定端口号
 
-typedef void* (*airkiss_memset_fn) (void* ptr, int value, unsigned int num);
-typedef void* (*airkiss_memcpy_fn) (void* dst, const void* src, unsigned int num);
-typedef int (*airkiss_memcmp_fn) (const void* ptr1, const void* ptr2, unsigned int num);
-typedef int (*airkiss_printf_fn) (const char* format, ...);
+  typedef void *(*airkiss_memset_fn)(void *ptr, int value, unsigned int num);
+  typedef void *(*airkiss_memcpy_fn)(void *dst, const void *src, unsigned int num);
+  typedef int (*airkiss_memcmp_fn)(const void *ptr1, const void *ptr2, unsigned int num);
+  typedef int (*airkiss_printf_fn)(const char *format, ...);
 
+  typedef struct
+  {
+    airkiss_memset_fn memset;
+    airkiss_memcpy_fn memcpy;
+    airkiss_memcmp_fn memcmp;
+    airkiss_printf_fn printf;
 
+  } airkiss_config_t;
 
-typedef struct
-{
-	airkiss_memset_fn memset;
-	airkiss_memcpy_fn memcpy;
-	airkiss_memcmp_fn memcmp;
-	airkiss_printf_fn printf;
-
-} airkiss_config_t;
-
-/** \defgroup WiFi_APIs WiFi Related APIs
+  /** \defgroup WiFi_APIs WiFi Related APIs
   * @brief WiFi APIs
   */
 
-/** @addtogroup WiFi_APIs
+  /** @addtogroup WiFi_APIs
   * @{
   */
 
-/** \defgroup AirKiss_APIs AirKiss APIs
+  /** \defgroup AirKiss_APIs AirKiss APIs
   * @brief AirKiss APIs
   *
   * API airkiss_lan_recv and airkiss_lan_pack are provided for the function that AirKiss can detect 
@@ -49,11 +49,11 @@ typedef struct
   *
   */
 
-/** @addtogroup AirKiss_APIs
+  /** @addtogroup AirKiss_APIs
   * @{
   */
 
-/**
+  /**
   * @brief       Get the version information of AirKiss lib.
   *
   * @attention The lenth of version is unknown
@@ -63,47 +63,44 @@ typedef struct
   * @return     the version information of AirKiss lib
   */
 
-const char* airkiss_version(void);
+  const char *airkiss_version(void);
 
+  typedef enum
+  {
+    /** the length of the data buffer is lack*/
+    AIRKISS_LAN_ERR_OVERFLOW = -5,
 
-typedef enum
-{
-	/** the length of the data buffer is lack*/
-	AIRKISS_LAN_ERR_OVERFLOW = -5,
+    /** Do not support the type of instruction */
+    AIRKISS_LAN_ERR_CMD = -4,
 
-	/** Do not support the type of instruction */
-	AIRKISS_LAN_ERR_CMD = -4,
+    /** Error reading data package */
+    AIRKISS_LAN_ERR_PAKE = -3,
 
-	/** Error reading data package */
-	AIRKISS_LAN_ERR_PAKE = -3,
+    /** Error function passing parameters */
+    AIRKISS_LAN_ERR_PARA = -2,
 
-	/** Error function passing parameters */
-	AIRKISS_LAN_ERR_PARA = -2,
+    /** Packet data error */
+    AIRKISS_LAN_ERR_PKG = -1,
 
-	/** Packet data error */
-	AIRKISS_LAN_ERR_PKG = -1,
+    /** Message format is correct */
+    AIRKISS_LAN_CONTINUE = 0,
 
-	/** Message format is correct */
-	AIRKISS_LAN_CONTINUE = 0,
+    /** Find equipment request packet is received */
+    AIRKISS_LAN_SSDP_REQ = 1,
 
-	/** Find equipment request packet is received */
-	AIRKISS_LAN_SSDP_REQ = 1,
+    /** Packet packaging complete */
+    AIRKISS_LAN_PAKE_READY = 2
 
-	/** Packet packaging complete */
-	AIRKISS_LAN_PAKE_READY = 2
+  } airkiss_lan_ret_t;
 
+  typedef enum
+  {
+    AIRKISS_LAN_SSDP_REQ_CMD = 0x1,
+    AIRKISS_LAN_SSDP_RESP_CMD = 0x1001,
+    AIRKISS_LAN_SSDP_NOTIFY_CMD = 0x1002
+  } airkiss_lan_cmdid_t;
 
-} airkiss_lan_ret_t;
-
-
-typedef enum
-{
-	AIRKISS_LAN_SSDP_REQ_CMD = 0x1,
-	AIRKISS_LAN_SSDP_RESP_CMD = 0x1001,
-	AIRKISS_LAN_SSDP_NOTIFY_CMD = 0x1002
-} airkiss_lan_cmdid_t;
-
-/**
+  /**
   * @brief     Parse the UDP packet sent by AirKiss.
   *
   * @param     const void* body : the start of the UDP message body data pointer.
@@ -114,10 +111,9 @@ typedef enum
   * @return    <0  : error code (reference airkiss_lan_ret_t)
   */
 
-int airkiss_lan_recv(const void* body, unsigned short length, const airkiss_config_t* config);
+  int airkiss_lan_recv(const void *body, unsigned short length, const airkiss_config_t *config);
 
-
-/**
+  /**
   * @brief     Packaging the UDP packet.
   *
   * @param     airkiss_lan_cmdid_t ak_lan_cmdid : type of the packet.
@@ -133,15 +129,22 @@ int airkiss_lan_recv(const void* body, unsigned short length, const airkiss_conf
   * @return    <0  : error code (reference airkiss_lan_ret_t)
   */
 
-int airkiss_lan_pack(airkiss_lan_cmdid_t ak_lan_cmdid, void* appid, void* deviceid, void* _datain, unsigned short inlength, void* _dataout, unsigned short* outlength, const airkiss_config_t* config);
+  int airkiss_lan_pack(airkiss_lan_cmdid_t ak_lan_cmdid, void *appid, void *deviceid, void *_datain, unsigned short inlength, void *_dataout, unsigned short *outlength, const airkiss_config_t *config);
 
-/**
+  /**
   * @}
   */
 
-/**
+  /**
   * @}
   */
+
+  const airkiss_config_t akconf = {
+      (airkiss_memset_fn)&memset,
+      (airkiss_memcpy_fn)&memcpy,
+      (airkiss_memcmp_fn)&memcmp,
+      0,
+  };
 
 #ifdef __cplusplus
 }

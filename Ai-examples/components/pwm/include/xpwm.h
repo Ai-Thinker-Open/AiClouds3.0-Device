@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2019-11-21 15:59:45
- * @LastEditTime: 2020-05-02 19:41:34
+ * @LastEditTime: 2020-05-05 20:50:39
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \ESP8266_RTOS_SDK\mine\ESP8266ForMqttPWM\components\pwm\include\xpwm.h
@@ -33,13 +33,13 @@
 #define APK_MIN_COLORTEMP 2700 //用户定义最小的色温数值
 #define APK_MAX_COLOR 255      //用户定义最大的RGB数值
 //pwm gpio口配置
-#define CHANNLE_PWM_TOTAL 5
+#define CHANNLE_PWM_TOTAL 2
 
-#define PWM_CW_OUT_IO_NUM 14
+#define PWM_CW_OUT_IO_NUM 12
 #define PWM_WW_OUT_IO_NUM 13
-#define PWM_RED_OUT_IO_NUM 12
+#define PWM_RED_OUT_IO_NUM 5
 #define PWM_GREEN_OUT_IO_NUM 15
-#define PWM_BLUE_OUT_IO_NUM 5
+#define PWM_BLUE_OUT_IO_NUM 14
 
 //是否带有记忆功能
 #define IS_SAVE_PARAMS true

@@ -43,18 +43,17 @@
 
 void TaskSmartConfigAirKiss2Net(void *parm);
 
-
 //  *    基于 esp-idf esp8266芯片 rtos3.0 sdk 开发，共勉！
-//  * 
+//  *
 //  *   这是esp-touch或 微信airkiss配网以及近场发现的功能和连接MQTT服务器的的demo示范！
-//  * 
+//  *
 //  *   按键接线 GPIO0引脚下降沿触发，LED的正极接GPIO12，负极接GND；
 //  *   按键短按 ，改变灯具状态并上报状态到服务器；
 //  *   按键长按 ，进去配网模式，搜索 "安信可科技" 微信公众号点击 WiFi配置；
 //  *
 //  *    有任何技术问题邮箱： support@aithinker.com
 //  *    @team: Ai-Thinker Open Team 安信可开源团队-半颗心脏 xuhongv@aithinker.com
- 
+
 typedef struct __User_data
 {
 	char allData[1024];
@@ -99,7 +98,7 @@ char udp_msg[512]; //固定的本地广播数据
  * @Description: 上报数据到服务器
  * @param: null
  * @return: 
-*/ 
+*/
 static void post_data_to_clouds()
 {
 
@@ -130,12 +129,11 @@ static void post_data_to_clouds()
 	cJSON_Delete(pRoot);
 }
 
-
 /* 
  * @Description: 解析下发数据的队列逻辑处理
  * @param: null
  * @return: 
-*/ 
+*/
 void Task_ParseJSON(void *pvParameters)
 {
 	printf("[SY] Task_ParseJSON_Message creat ... \n");
@@ -185,7 +183,7 @@ void Task_ParseJSON(void *pvParameters)
  * @Description: MQTT服务器的下发消息回调
  * @param: 
  * @return: 
-*/ 
+*/
 esp_err_t MqttCloudsCallBack(esp_mqtt_event_handle_t event)
 {
 	int msg_id;
@@ -240,12 +238,12 @@ esp_err_t MqttCloudsCallBack(esp_mqtt_event_handle_t event)
  * @Description: MQTT参数连接的配置
  * @param: 
  * @return: 
-*/ 
+*/
 void TaskXMqttRecieve(void *p)
 {
 	//连接的配置参数
 	esp_mqtt_client_config_t mqtt_cfg = {
-		.host = "www.xuhong.com", //连接的域名 ，请务必修改为您的
+		.host = "www.xuhongv.com", //连接的域名 ，请务必修改为您的
 		.port = 1883,			   //端口，请务必修改为您的
 		.username = "admin",	   //用户名，请务必修改为您的
 		.password = "xuhong123",   //密码，请务必修改为您的
@@ -265,7 +263,7 @@ void TaskXMqttRecieve(void *p)
  * @Description:  微信配网近场发现，可注释不要
  * @param: 
  * @return: 
-*/ 
+*/
 static void TaskCreatSocket(void *pvParameters)
 {
 
@@ -363,13 +361,20 @@ static void TaskCreatSocket(void *pvParameters)
 		}
 	}
 }
+static void TaskRestartSystem(void *p)
+{
+	router_wifi_clean_info();
+	vTaskDelay(2500 / portTICK_RATE_MS);
+	esp_restart();
+	vTaskDelete(NULL);
+}
 
 /* 
  * @Description: 微信配网
  * @param: 
  * @return: 
 */
- bool startAirkissTask()
+bool startAirkissTask()
 {
 
 	ESP_LOGI(TAG, "startAirkissTask");
@@ -393,7 +398,7 @@ static void TaskCreatSocket(void *pvParameters)
  * @param: 
  * @param: 
  * @return: 
-*/ 
+*/
 static esp_err_t event_handler(void *ctx, system_event_t *event)
 {
 	switch (event->event_id)
@@ -441,7 +446,7 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
  * @param: 
  * @param: 
  * @return: 
-*/ 
+*/
 static void sc_callback(smartconfig_status_t status, void *pdata)
 {
 	switch (status)
@@ -492,7 +497,7 @@ static void sc_callback(smartconfig_status_t status, void *pdata)
  * @Description:  一键配网
  * @param: 
  * @return: 
-*/ 
+*/
 void TaskSmartConfigAirKiss2Net(void *parm)
 {
 	EventBits_t uxBits;
@@ -551,6 +556,8 @@ static void ButtonLongPressCallBack(void *arg)
 {
 	ESP_LOGI(TAG, "ButtonLongPressCallBack  esp_get_free_heap_size(): %d ", esp_get_free_heap_size());
 	light_driver_set_cycle(2);
+	//重启并进去配网模式
+	xTaskCreate(TaskRestartSystem, "TaskRestartSystem", 1024, NULL, 6, NULL);
 }
 
 /**
@@ -603,7 +610,7 @@ void app_main(void)
 	uint8_t mac[6];
 	esp_read_mac(mac, ESP_MAC_WIFI_STA);
 	sprintf(deviceUUID, "%02x%02x%02x%02x%02x%02x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-	sprintf((char *)deviceInfo, "{\"device\":\"%s\",\"mac\":\"%s\"}", DEVICE_TYPE, deviceUUID);
+	sprintf((char *)deviceInfo, "{\"type\":\"%s\",\"mac\":\"%s\"}", DEVICE_TYPE, deviceUUID);
 	//组建MQTT订阅的主题
 	sprintf(MqttTopicSub, "/%s/%s/devSub", DEVICE_TYPE, deviceUUID);
 	//组建MQTT推送的主题

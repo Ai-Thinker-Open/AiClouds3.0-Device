@@ -12,7 +12,7 @@
 
  
 <p align="center">
-  <img src="./docs/_static/wechat.jpeg" width="300px" height="300px" alt="Banner" />
+  <img src="../../docs/_static/wechat.jpeg" width="300px" height="300px" alt="Banner" />
 </p>
  
 

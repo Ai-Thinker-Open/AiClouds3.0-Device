@@ -52,9 +52,7 @@
 
 ---
 
-## 开发资料
-
-### 环境搭建
+## 开发入门
 
 * [Windows](https://dl.espressif.com/dl/xtensa-lx106-elf-win32-1.22.0-100-ge567ec7-5.2.0.zip)
 * [Mac](https://dl.espressif.com/dl/xtensa-lx106-elf-macos-1.22.0-100-ge567ec7-5.2.0.tar.gz)
@@ -70,10 +68,13 @@
 项目遵循协议： [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 服务器开源地址：https://github.com/xuhongv/xClouds-php
-设备开源地址：https://github.com/xuhongv/xClouds-device
+
+设备端开源地址：https://github.com/xuhongv/xClouds-device
 
 **QQ交流群：434878850**  [ --> 点我加群](http://shang.qq.com/wpa/qunwpa?idkey=943aaf91819e428e2cab8564a8ef0588dbbfa343bfe76b7547fd8b0fadf8de52)
 
 **1、额外说明，架构中提到的对公司或组织的观点，如有争议，请联系我；**
+
 **2、架构中涉及到的技术点，我会一一公布出来以表感谢；**
+
 **3、同时，也欢迎大家支持我，或一起壮大这个框架，奉献你代码项目；**

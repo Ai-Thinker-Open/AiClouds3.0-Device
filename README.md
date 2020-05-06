@@ -54,9 +54,21 @@
 
 ## 开发入门
 
-* [Windows](https://dl.espressif.com/dl/xtensa-lx106-elf-win32-1.22.0-100-ge567ec7-5.2.0.zip)
-* [Mac](https://dl.espressif.com/dl/xtensa-lx106-elf-macos-1.22.0-100-ge567ec7-5.2.0.tar.gz)
+### 环境搭建
 
+&nbsp;&nbsp;&nbsp;&nbsp;  因为此为基于 RTOS 系统上开发，需要一定的C基础或 freeRtos 开发基础，强烈建议使用 Linux 开发；
+
+* [Windows](https://aithinker.blog.csdn.net/article/details/104390508)
+* [Linux](https://xuhong.blog.csdn.net/article/details/104736261)
+
+&nbsp;&nbsp;&nbsp;&nbsp;然后跑起 demo， 比如 [1.SmartConfig_AirKiss_To_MQTT](./Ai-examples/1.SmartConfig_AirKiss_To_MQTT)
+
+```
+cd /Ai-examples/1.SmartConfig_AirKiss_To_MQTT
+make menuconfig
+make -j8 flash 
+make monitor
+```
 
 # 感谢：
 
@@ -70,8 +82,6 @@
 服务器开源地址：https://github.com/xuhongv/xClouds-php
 
 设备端开源地址：https://github.com/xuhongv/xClouds-device
-
-**QQ交流群：434878850**  [ --> 点我加群](http://shang.qq.com/wpa/qunwpa?idkey=943aaf91819e428e2cab8564a8ef0588dbbfa343bfe76b7547fd8b0fadf8de52)
 
 **1、额外说明，架构中提到的对公司或组织的观点，如有争议，请联系我；**
 

@@ -41,15 +41,13 @@
 
 ## 例程简介
 
-* [Touch Sensor Application Note](./Ai-examples/1.SmartConfig_AirKiss_To_MQTT) 
+* [1.SmartConfig_AirKiss_To_MQTT](./Ai-examples/1.SmartConfig_AirKiss_To_MQTT) : 简单模板，实现 smartconfig 一键配网 和 微信公众号 airkiss 配网，并实现连接 MQTT 服务器的通讯实现上下发数据的例子；
 
 ---
 
 ## 开发资料
 
 ### 环境搭建
-
-v5.2.0
 
 * [Windows](https://dl.espressif.com/dl/xtensa-lx106-elf-win32-1.22.0-100-ge567ec7-5.2.0.zip)
 * [Mac](https://dl.espressif.com/dl/xtensa-lx106-elf-macos-1.22.0-100-ge567ec7-5.2.0.tar.gz)

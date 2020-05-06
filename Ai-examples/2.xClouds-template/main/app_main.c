@@ -44,16 +44,15 @@
 
 void TaskSmartConfigAirKiss2Net(void *parm);
 
-//  *    基于 esp-idf esp8266芯片 rtos3.0 sdk 开发，共勉！
-//  *
+// *    基于 esp-idf esp8266芯片 rtos3.0 sdk 开发，配合 xClouds-php 可实现微信配网绑定控制 + 天猫精灵语音控制 + 小爱同学控制；
+//  * 
 //  *   这是esp-touch或 微信airkiss配网以及近场发现的功能和连接MQTT服务器的的demo示范！
-//  *
-//  *   按键接线 GPIO0引脚下降沿触发，LED的正极接GPIO12，负极接GND；
-//  *   按键短按 ，改变灯具状态并上报状态到服务器；
+//  * 
+//  *   LED接线参考 XPWM.h 头文件定义，按键接线 GPIO0 下降沿有效；
 //  *   按键长按 ，进去配网模式，搜索 "安信可科技" 微信公众号点击 WiFi配置；
 //  *
-//  *    有任何技术问题邮箱： support@aithinker.com
-//  *    @team: Ai-Thinker Open Team 安信可开源团队-半颗心脏 xuhongv@aithinker.com
+//  *    有任何技术问题邮箱： 870189248@qq.com
+//  *    @team: Ai-Thinker Open Team 安信可开源团队-半颗心脏
 
 typedef struct __User_data
 {

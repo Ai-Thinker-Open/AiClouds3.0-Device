@@ -13,6 +13,7 @@ extern "C"
 //airkiss
 #define COUNTS_BOACAST 30            //发包次数，微信建议20次以上
 #define ACCOUNT_ID "gh_4248324a4d02" //微信公众号
+#define ACCOUNT_ID_XUHONG "gh_6b7ce0fcdb0f" //测试微信公众号
 #define LOCAL_UDP_PORT 12476         //固定端口号
 
   typedef void *(*airkiss_memset_fn)(void *ptr, int value, unsigned int num);

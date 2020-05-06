@@ -37,103 +37,21 @@
 &nbsp;&nbsp;&nbsp;&nbsp;  认识我的人都知道，我和乐鑫 ESP8266 芯片有一个解不开的缘分，我通过此芯片认识很多志同道合的的小伙伴，也让我逐渐地找到了自己的人生价值，所以，我会以自己擅长的 Wi-Fi模块二次开发，带领大家快速体验和商业化使用此物美价廉的芯片；
 
 
-&nbsp;&nbsp;&nbsp;&nbsp;  
+&nbsp;&nbsp;&nbsp;&nbsp;  本框架基于**ESP8266_RTOS_SDK v3.0** 上二次开发，采用C语言开发，并非 **arduino** 开发；
 
+## 例程简介
 
-
-### 1. Master branch
-The master branch is an integration branch where bug fixes/features are gathered for compiling and functional testing.
-
-### 2. Release branch
-The release branch is where releases are maintained and hot fixes (with names like *release/v2.x.x*) are added.
-Please ensure that all your production-related work are tracked with the release branches.
-
-With this new model, we can push out bug fixes more quickly and achieve simpler maintenance.
-
-## Roadmap
-*ESP8266_RTOS_SDK*'s framework is quite outdated and different from the current *[esp-idf](https://github.com/espressif/esp-idf)* and we are planning to migrate *ESP8266_RTOS_SDK* to *esp-idf* eventually after *v2.0.0*.
-
-However, we will firstly provide a new version of ESP8266 SDK (*ESP8266_RTOS_SDK v3.0*), which shares the same framework with *esp-idf* (esp-idf style), as a work-around, because the multi-CPU architecture is not supported by *esp-idf* for the time being.
-
-Actions to be taken for *ESP8266_RTOS_SDK v3.0* include the following items:
-
-1. Modify the framework to esp-idf style
-2. Restructure some core libraries including Wi-Fi libraries and libmain
-3. Update some third-party libraries including FreeRTOS, lwIP, mbedTLS, noPoll, libcoap, SPIFFS, cJSON, wolfSSL, etc.
-4. Update some drivers
-5. Others
+* [Touch Sensor Application Note](./Ai-examples/1.SmartConfig_AirKiss_To_MQTT) 
 
 ---
 
-# Developing With the ESP8266_RTOS_SDK
+## 开发资料
 
-## Get toolchain
+### 环境搭建
 
 v5.2.0
 
 * [Windows](https://dl.espressif.com/dl/xtensa-lx106-elf-win32-1.22.0-100-ge567ec7-5.2.0.zip)
 * [Mac](https://dl.espressif.com/dl/xtensa-lx106-elf-macos-1.22.0-100-ge567ec7-5.2.0.tar.gz)
-* [Linux(64)](https://dl.espressif.com/dl/xtensa-lx106-elf-linux64-1.22.0-100-ge567ec7-5.2.0.tar.gz)
-* [Linux(32)](https://dl.espressif.com/dl/xtensa-lx106-elf-linux32-1.22.0-100-ge567ec7-5.2.0.tar.gz)
 
-If you are still using old version SDK(< 3.0), please use toolchain v4.8.5, as following:
-
-* [Windows](https://dl.espressif.com/dl/xtensa-lx106-elf-win32-1.22.0-88-gde0bdc1-4.8.5.tar.gz)
-* [Mac](https://dl.espressif.com/dl/xtensa-lx106-elf-osx-1.22.0-88-gde0bdc1-4.8.5.tar.gz)
-* [Linux(64)](https://dl.espressif.com/dl/xtensa-lx106-elf-linux64-1.22.0-88-gde0bdc1-4.8.5.tar.gz)
-* [Linux(32)](https://dl.espressif.com/dl/xtensa-lx106-elf-linux32-1.22.0-88-gde0bdc1-4.8.5.tar.gz)
-
-## Get ESP8266_RTOS_SDK
-
-Besides the toolchain (that contains programs to compile and build the application), you also need ESP8266 specific API / libraries. They are provided by Espressif in [ESP8266_RTOS_SDK](https://github.com/espressif/ESP8266_RTOS_SDK) repository. To get it, open terminal, navigate to the directory you want to put ESP8266_RTOS_SDK, and clone it using `git clone` command:
-
-```
-cd ~/esp
-git clone https://github.com/espressif/ESP8266_RTOS_SDK.git
-```
-
-ESP8266_RTOS_SDK will be downloaded into `~/esp/ESP8266_RTOS_SDK`.
-
-## Setup Path to ESP8266_RTOS_SDK
-
-The toolchain programs access ESP8266_RTOS_SDK using `IDF_PATH` environment variable. This variable should be set up on your PC, otherwise projects will not build. Setting may be done manually, each time PC is restarted. Another option is to set up it permanently by defining `IDF_PATH` in user profile.
-
-For manually, the command:
-```
-export IDF_PATH=~/esp/ESP8266_RTOS_SDK
-```
-
-## Start a Project
-Now you are ready to prepare your application for ESP8266. To start off quickly, we can use `examples/get-started/hello_world` project from `examples` directory in SDK.
-
-Once you've found the project you want to work with, change to its directory and you can configure and build it.
-
-## Connect
-
-You are almost there. To be able to proceed further, connect ESP8266 board to PC, check under what serial port the board is visible and verify if serial communication works. Note the port number, as it will be required in the next step.
-
-## Configuring the Project
-
-Being in terminal window, go to directory of `hello_world` application by typing `cd ~/esp/ESP8266_RTOS_SDK/examples/get-started/hello_world`. Then start project configuration utility `menuconfig`:
-
-```
-cd ~/esp/ESP8266_RTOS_SDK/examples/get-started/hello_world
-make menuconfig
-```
-
-In the menu, navigate to `Serial flasher config` > `Default serial port` to configure the serial port, where project will be loaded to. Confirm selection by pressing enter, save configuration by selecting `< Save >` and then exit application by selecting `< Exit >`.
-
-> Note:
-	On Windows, serial ports have names like COM1. On MacOS, they start with `/dev/cu.`. On Linux, they start with `/dev/tty`.
-
-Here are couple of tips on navigation and use of `menuconfig`:
-
-* Use up & down arrow keys to navigate the menu.
-* Use Enter key to go into a submenu, Escape key to go out or to exit.
-* Type `?` to see a help screen. Enter key exits the help screen.
-* Use Space key, or `Y` and `N` keys to enable (Yes) and disable (No) configuration items with checkboxes "`[*]`"
-* Pressing `?` while highlighting a configuration item displays help about that item.
-* Type `/` to search the configuration items.
-
-Once done configuring, press Escape multiple times to exit and say "Yes" to save the new configuration when prompted.
 

@@ -1,13 +1,15 @@
-menu "Example Configuration"
+menu "AiThinker Configuration"
 
-config BROKER_URL
-    string "Broker URL"
-    default "mqtt://iot.eclipse.org"
-    help
-        URL of the broker to connect to
-
-config BROKER_URL_FROM_STDIN
-    bool
-    default y if BROKER_URL = "FROM_STDIN"
+choice ESP8266_BOARD
+    prompt "AiThinker board"
+    default AITHINKER_NODEMCU_1_2_ESP8266
+config AITHINKER_NODEMCU_1_2_ESP8266
+    bool "AiThinker 1.2 NodeMCU"
+config AITHINKER_NODEMCU_1_1_ESP8266
+    bool "AiThinker 1.1 NodeMCU"
+config AITHINKER_GIZWITS_ESP8266
+    bool "AiThinker GizWits esp8266"
+endchoice
 
 endmenu
+

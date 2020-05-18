@@ -244,33 +244,6 @@ void Task_ParseJSON(void *pvParameters)
 		}
 		//end SetColor
 
-		//start SetColor
-		else if (strcmp(pJSON_Name->valuestring, "SetMode") == 0)
-		{
-			cJSON *pJSON_Value = cJSON_GetObjectItem(pJSON_Payload, "value");
-			if (strcmp(pJSON_Value->valuestring, "reading") == 0)
-			{
-				light_driver_set_mode(0);
-			}
-			else if (strcmp(pJSON_Value->valuestring, "movie") == 0)
-			{
-				light_driver_set_mode(1);
-			}
-			else if (strcmp(pJSON_Value->valuestring, "sleep") == 0)
-			{
-				light_driver_set_mode(2);
-			}
-			else if (strcmp(pJSON_Value->valuestring, "live") == 0)
-			{
-				light_driver_set_mode(3);
-			}
-			else if (strcmp(pJSON_Value->valuestring, "nightLight") == 0 || strcmp(pJSON_Value->valuestring, "night") == 0)
-			{
-				light_driver_set_mode(4);
-			}
-		}
-		//end SetColor
-
 		post_data_to_clouds();
 
 	__cJSON_Delete:

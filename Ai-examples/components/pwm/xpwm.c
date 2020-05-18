@@ -25,43 +25,73 @@ esp_err_t pwm_init_data()
     // Set configuration of timer0 for high speed channels
     ledc_timer_config(&ledc_timer);
 
-    ledc_channel_config_t ledc_channel[CHANNLE_PWM_TOTAL] = {
-        {.channel = LEDC_CHANNEL_1,
-         .duty = 0,
-         .gpio_num = PWM_CW_OUT_IO_NUM,
-         .speed_mode = LEDC_MODE,
-         .hpoint = 0,
-         .timer_sel = LEDC_TIMER},
-        {.channel = LEDC_CHANNEL_1,
-         .duty = 0,
-         .gpio_num = PWM_WW_OUT_IO_NUM,
-         .speed_mode = LEDC_MODE,
-         .hpoint = 0,
-         .timer_sel = LEDC_TIMER},
-        {.channel = LEDC_CHANNEL_1,
-         .duty = 0,
-         .gpio_num = PWM_RED_OUT_IO_NUM,
-         .speed_mode = LEDC_MODE,
-         .hpoint = 0,
-         .timer_sel = LEDC_TIMER},
-        {.channel = LEDC_CHANNEL_1,
-         .duty = 0,
-         .gpio_num = PWM_GREEN_OUT_IO_NUM,
-         .speed_mode = LEDC_MODE,
-         .hpoint = 0,
-         .timer_sel = LEDC_TIMER},
-        {.channel = LEDC_CHANNEL_1,
-         .duty = 0,
-         .gpio_num = PWM_BLUE_OUT_IO_NUM,
-         .speed_mode = LEDC_MODE,
-         .hpoint = 0,
-         .timer_sel = LEDC_TIMER},
-    };
-
-    // Set LED Controller with previously prepared configuration
-    for (ch = 0; ch < CHANNLE_PWM_TOTAL; ch++)
+    if (CHANNLE_PWM_TOTAL == 3)
     {
-        ledc_channel_config(&ledc_channel[ch]);
+        ledc_channel_config_t ledc_channel[CHANNLE_PWM_TOTAL] = {
+            {.channel = LEDC_CHANNEL_0,
+             .duty = 0,
+             .gpio_num = PWM_RED_OUT_IO_NUM,
+             .speed_mode = LEDC_MODE,
+             .hpoint = 0,
+             .timer_sel = LEDC_TIMER},
+            {.channel = LEDC_CHANNEL_1,
+             .duty = 0,
+             .gpio_num = PWM_GREEN_OUT_IO_NUM,
+             .speed_mode = LEDC_MODE,
+             .hpoint = 0,
+             .timer_sel = LEDC_TIMER},
+            {.channel = LEDC_CHANNEL_2,
+             .duty = 0,
+             .gpio_num = PWM_BLUE_OUT_IO_NUM,
+             .speed_mode = LEDC_MODE,
+             .hpoint = 0,
+             .timer_sel = LEDC_TIMER},
+        };
+        // Set LED Controller with previously prepared configuration
+        for (ch = 0; ch < CHANNLE_PWM_TOTAL; ch++)
+        {
+            ledc_channel_config(&ledc_channel[ch]);
+        }
+    }
+    else
+    {
+        ledc_channel_config_t ledc_channel[CHANNLE_PWM_TOTAL] = {
+            {.channel = LEDC_CHANNEL_1,
+             .duty = 0,
+             .gpio_num = PWM_CW_OUT_IO_NUM,
+             .speed_mode = LEDC_MODE,
+             .hpoint = 0,
+             .timer_sel = LEDC_TIMER},
+            {.channel = LEDC_CHANNEL_1,
+             .duty = 0,
+             .gpio_num = PWM_WW_OUT_IO_NUM,
+             .speed_mode = LEDC_MODE,
+             .hpoint = 0,
+             .timer_sel = LEDC_TIMER},
+            {.channel = LEDC_CHANNEL_1,
+             .duty = 0,
+             .gpio_num = PWM_RED_OUT_IO_NUM,
+             .speed_mode = LEDC_MODE,
+             .hpoint = 0,
+             .timer_sel = LEDC_TIMER},
+            {.channel = LEDC_CHANNEL_1,
+             .duty = 0,
+             .gpio_num = PWM_GREEN_OUT_IO_NUM,
+             .speed_mode = LEDC_MODE,
+             .hpoint = 0,
+             .timer_sel = LEDC_TIMER},
+            {.channel = LEDC_CHANNEL_1,
+             .duty = 0,
+             .gpio_num = PWM_BLUE_OUT_IO_NUM,
+             .speed_mode = LEDC_MODE,
+             .hpoint = 0,
+             .timer_sel = LEDC_TIMER},
+        };
+        // Set LED Controller with previously prepared configuration
+        for (ch = 0; ch < CHANNLE_PWM_TOTAL; ch++)
+        {
+            ledc_channel_config(&ledc_channel[ch]);
+        }
     }
 
     // Initialize fade service.
@@ -76,7 +106,7 @@ esp_err_t pwm_init_data()
         memset(&dev_status, 0x0, sizeof(dev_status));
 
         uint32_t length = sizeof(dev_status);
-        
+
         dev_status.ColorMode = NULL;
         if (nvs_open(NVS_CONFIG_NAME, NVS_READWRITE, &out_handle) != ESP_OK)
         {
@@ -86,8 +116,8 @@ esp_err_t pwm_init_data()
         if (nvs_get_blob(out_handle, NVS_TABLE_NAME, &dev_status, &length) != ESP_OK)
             return ESP_FAIL;
 
-       //   printf(" outBrightnessChannle : %d , outColortempChannle %d \n", dev_status.Brightness, dev_status.Colortemp);
-       //   printf(" Red : %d , Green %d, Green %d \n", dev_status.Red, dev_status.Green, dev_status.Blue);
+        //   printf(" outBrightnessChannle : %d , outColortempChannle %d \n", dev_status.Brightness, dev_status.Colortemp);
+        //   printf(" Red : %d , Green %d, Green %d \n", dev_status.Red, dev_status.Green, dev_status.Blue);
         //printf(" ColorMode : %d  \n", dev_status.ColorMode);
 
         nvs_close(out_handle);
@@ -110,7 +140,7 @@ esp_err_t light_driver_set_ctb(const int brightness, const int color_temperature
     dev_status.Brightness = brightness;
     dev_status.Colortemp = color_temperature;
 
-    if (5 == CHANNLE_PWM_TOTAL)
+    if (CHANNLE_PWM_TOTAL > 2)
     {
         dev_status.Red = 0;
         dev_status.Green = 0;
@@ -129,7 +159,7 @@ esp_err_t light_driver_set_ctb(const int brightness, const int color_temperature
     ledc_set_fade_with_time(LEDC_MODE, 1, outColortempChannle, LEDC_FADE_TIME);
     ledc_set_fade_with_time(LEDC_MODE, 0, outBrightnessChannle, LEDC_FADE_TIME);
 
-    if (CHANNLE_PWM_TOTAL == 5)
+    if (CHANNLE_PWM_TOTAL > 2)
     {
         ledc_set_fade_with_time(LEDC_MODE, CHANNLE_PWM_RED, 0, LEDC_FADE_TIME);
         ledc_set_fade_with_time(LEDC_MODE, CHANNLE_PWM_GREEN, 0, LEDC_FADE_TIME);
@@ -262,15 +292,23 @@ esp_err_t light_driver_set_rgb(const uint8_t red, const uint8_t green, const uin
     int outGreenChannle = 8192 * green / APK_MAX_COLOR;
     int outBlueChannle = 8192 * blue / APK_MAX_COLOR;
 
-    // printf("outRedChannle: %d \n", outRedChannle);
-    // printf("outGreenChannle: %d \n", outGreenChannle);
-    // printf("outBlueChannle: %d\n\n", outBlueChannle);
-
-    ledc_set_fade_with_time(LEDC_MODE, CHANNLE_PWM_CW, 0, LEDC_FADE_TIME);
-    ledc_set_fade_with_time(LEDC_MODE, CHANNLE_PWM_WW, 0, LEDC_FADE_TIME);
-    ledc_set_fade_with_time(LEDC_MODE, CHANNLE_PWM_RED, outRedChannle, LEDC_FADE_TIME);
-    ledc_set_fade_with_time(LEDC_MODE, CHANNLE_PWM_GREEN, outGreenChannle, LEDC_FADE_TIME);
-    ledc_set_fade_with_time(LEDC_MODE, CHANNLE_PWM_BLUE, outBlueChannle, LEDC_FADE_TIME);
+    printf("outRedChannle: %d \n", outRedChannle);
+    printf("outGreenChannle: %d \n", outGreenChannle);
+    printf("outBlueChannle: %d\n\n", outBlueChannle);
+    if (CHANNLE_PWM_TOTAL == 3)
+    {
+        ledc_set_fade_with_time(LEDC_MODE, 0, outRedChannle, LEDC_FADE_TIME);
+        ledc_set_fade_with_time(LEDC_MODE, 1, outGreenChannle, LEDC_FADE_TIME);
+        ledc_set_fade_with_time(LEDC_MODE, 2, outBlueChannle, LEDC_FADE_TIME);
+    }
+    else
+    {
+        ledc_set_fade_with_time(LEDC_MODE, CHANNLE_PWM_CW, 0, LEDC_FADE_TIME);
+        ledc_set_fade_with_time(LEDC_MODE, CHANNLE_PWM_WW, 0, LEDC_FADE_TIME);
+        ledc_set_fade_with_time(LEDC_MODE, CHANNLE_PWM_RED, outRedChannle, LEDC_FADE_TIME);
+        ledc_set_fade_with_time(LEDC_MODE, CHANNLE_PWM_GREEN, outGreenChannle, LEDC_FADE_TIME);
+        ledc_set_fade_with_time(LEDC_MODE, CHANNLE_PWM_BLUE, outBlueChannle, LEDC_FADE_TIME);
+    }
 
     int ch = 0;
     for (ch = 0; ch < CHANNLE_PWM_TOTAL; ch++)
@@ -380,5 +418,18 @@ esp_err_t light_driver_set_cycle(uint8_t nums)
 esp_err_t light_driver_set_ctb_from_last()
 {
     light_driver_set_ctb(dev_status.Brightness, dev_status.Colortemp);
+    return ESP_OK;
+}
+
+esp_err_t light_driver_set_rgb_cycle(uint8_t nums)
+{
+    while (nums--)
+    {
+        light_driver_set_rgb(APK_MAX_COLOR, 0, 0);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        light_driver_set_rgb(0, APK_MAX_COLOR, 0);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        light_driver_set_rgb(0, 0, APK_MAX_COLOR);
+    }
     return ESP_OK;
 }

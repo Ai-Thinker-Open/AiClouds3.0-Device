@@ -32,14 +32,26 @@
 #define APK_MID_COLORTEMP 4800 //用户定义中间的色温数值
 #define APK_MIN_COLORTEMP 2700 //用户定义最小的色温数值
 #define APK_MAX_COLOR 255      //用户定义最大的RGB数值
-//pwm gpio口配置
-#define CHANNLE_PWM_TOTAL 2
 
+//pwm gpio口配置： 2表示冷暖灯， 3表示RGB灯，5表示冷暖RGB灯
+//@如果是仅有RGB，修改 PWM_RED_OUT_IO_NUM，PWM_GREEN_OUT_IO_NUM，PWM_BLUE_OUT_IO_NUM这三个即可
+#define CHANNLE_PWM_TOTAL 3
 #define PWM_CW_OUT_IO_NUM 12
 #define PWM_WW_OUT_IO_NUM 13
+
+#ifdef  CONFIG_AITHINKER_NODEMCU_1_2_ESP8266 //安信可 NodeMCU 开发板 带RGB
+#define PWM_RED_OUT_IO_NUM 4
+#define PWM_GREEN_OUT_IO_NUM 5
+#define PWM_BLUE_OUT_IO_NUM 2
+#elif   CONFIG_AITHINKER_GIZWITS_ESP8266 //安信可-机智云开发板 带RGB
+#define PWM_RED_OUT_IO_NUM 15
+#define PWM_GREEN_OUT_IO_NUM 12
+#define PWM_BLUE_OUT_IO_NUM 13
+#else
 #define PWM_RED_OUT_IO_NUM 5
 #define PWM_GREEN_OUT_IO_NUM 15
 #define PWM_BLUE_OUT_IO_NUM 14
+#endif
 
 //是否带有记忆功能
 #define IS_SAVE_PARAMS true
@@ -73,6 +85,7 @@ esp_err_t light_driver_set_switch(bool status);
 esp_err_t light_driver_set_color_mode(const char *colorMode);
 esp_err_t light_driver_set_mode(uint8_t mode);
 esp_err_t light_driver_set_cycle(uint8_t nums);
+esp_err_t light_driver_set_rgb_cycle(uint8_t nums);
 esp_err_t light_driver_set_ctb_from_last();
 
 /**

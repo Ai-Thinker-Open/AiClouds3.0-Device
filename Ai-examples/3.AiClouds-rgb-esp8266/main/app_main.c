@@ -112,7 +112,7 @@ static void post_data_to_clouds()
 	{
 		sprintf(colorMode, "%s", "NULL");
 	}
-
+   ESP_LOGI(TAG, "post_data_to_clouds colorMode : %s",colorMode);
 	cJSON *pRoot = cJSON_CreateObject();
 	cJSON *pHeader = cJSON_CreateObject();
 	cJSON *pAttr = cJSON_CreateArray();
@@ -206,14 +206,14 @@ void Task_ParseJSON(void *pvParameters)
 		if (strcmp(pJSON_Name->valuestring, "TurnOn") == 0)
 		{
 			//set Value ！执行开灯指令
-			light_driver_set_switch(1);
+			light_driver_set_rgb(APK_MAX_COLOR, 0, 0);
 		}
 		//end TurnOn
 
 		//start TurnOff
 		else if (strcmp(pJSON_Name->valuestring, "TurnOff") == 0)
 		{
-			light_driver_set_switch(0);
+			light_driver_set_rgb(0, 0, 0);
 		}
 		//end TurnOn
 
@@ -221,6 +221,7 @@ void Task_ParseJSON(void *pvParameters)
 		else if (strcmp(pJSON_Name->valuestring, "SetColor") == 0)
 		{
 			cJSON *pJSON_Value = cJSON_GetObjectItem(pJSON_Payload, "value");
+			light_driver_set_color_mode(pJSON_Value->valuestring);
 			if (strcmp(pJSON_Value->valuestring, "Red") == 0)
 			{
 				light_driver_set_rgb(APK_MAX_COLOR, 0, 0);
@@ -240,6 +241,10 @@ void Task_ParseJSON(void *pvParameters)
 			else if (strcmp(pJSON_Value->valuestring, "White") == 0)
 			{
 				light_driver_set_rgb(APK_MAX_COLOR, APK_MAX_COLOR, APK_MAX_COLOR);
+			}
+			else if (strcmp(pJSON_Value->valuestring, "Orange") == 0)
+			{
+				light_driver_set_rgb(APK_MAX_COLOR, 165, 0);
 			}
 		}
 		//end SetColor
@@ -681,7 +686,7 @@ void app_main(void)
 		break;
 
 	default:
-			ESP_LOGI(TAG, "MqttTopicPub default");
+		ESP_LOGI(TAG, "MqttTopicPub default");
 		break;
 	}
 	tcpip_adapter_init();

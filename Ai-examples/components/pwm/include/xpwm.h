@@ -62,7 +62,7 @@ typedef struct User_dev_status_t
 {
     int Power;
     int Mode;
-    char *ColorMode;
+    char ColorMode[10];
     int Brightness;
     int Colortemp;
     int Red;

@@ -107,7 +107,7 @@ esp_err_t pwm_init_data()
 
         uint32_t length = sizeof(dev_status);
 
-        dev_status.ColorMode = NULL;
+        sprintf(dev_status.ColorMode, "%s", "NULL");
         if (nvs_open(NVS_CONFIG_NAME, NVS_READWRITE, &out_handle) != ESP_OK)
         {
             printf("open innet_conf fail\n");
@@ -279,7 +279,7 @@ esp_err_t light_driver_set_rgb(const uint8_t red, const uint8_t green, const uin
     dev_status.Green = green;
     dev_status.Blue = blue;
 
-    if (!dev_status.Red || !dev_status.Green || !dev_status.Blue)
+    if (0 == dev_status.Red && 0 == dev_status.Green && 0 == dev_status.Blue)
     {
         dev_status.Power = 0;
     }
@@ -287,6 +287,8 @@ esp_err_t light_driver_set_rgb(const uint8_t red, const uint8_t green, const uin
     {
         dev_status.Power = 1;
     }
+
+    printf("dev_status.Power %d \n",dev_status.Power);
 
     int outRedChannle = 8192 * red / APK_MAX_COLOR;
     int outGreenChannle = 8192 * green / APK_MAX_COLOR;
@@ -391,14 +393,21 @@ esp_err_t light_driver_set_ctb_not_save(const int brightness, const int color_te
     return ESP_OK;
 }
 
+esp_err_t light_driver_set_color_mode(const char *colorMode)
+{
+
+    sprintf(dev_status.ColorMode, "%s", colorMode);
+
+    return ESP_OK;
+}
+
 esp_err_t light_driver_get_color_mode(char *pColor)
 {
     if (NULL == dev_status.ColorMode)
     {
         return ESP_FAIL;
     }
-
-    *pColor = dev_status.ColorMode;
+    memcpy(pColor, dev_status.ColorMode, strlen(dev_status.ColorMode));
     return ESP_OK;
 }
 

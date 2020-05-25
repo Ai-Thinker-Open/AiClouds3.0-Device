@@ -337,7 +337,7 @@ esp_err_t light_driver_set_rgb(const uint8_t red, const uint8_t green, const uin
 
 esp_err_t light_driver_get_rgb(uint8_t *p_red, uint8_t *p_green, uint8_t *p_blue)
 {
-    *p_red = dev_status.Red;
+    *p_red = (dev_status.Red);
     *p_green = dev_status.Green;
     *p_blue = dev_status.Blue;
     return ESP_OK;

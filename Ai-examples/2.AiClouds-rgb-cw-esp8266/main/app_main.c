@@ -45,9 +45,9 @@
 void TaskSmartConfigAirKiss2Net(void *parm);
 
 // *    基于 esp-idf esp8266芯片 rtos3.0 sdk 开发，配合 xClouds-php 可实现微信配网绑定控制 + 天猫精灵语音控制 + 小爱同学控制；
-//  * 
+//  *
 //  *   这是esp-touch或 微信airkiss配网以及近场发现的功能和连接MQTT服务器的的demo示范！
-//  * 
+//  *
 //  *   LED接线参考 XPWM.h 头文件定义，按键接线 GPIO0 下降沿有效；
 //  *   按键长按 ，进去配网模式，搜索 "安信可科技" 微信公众号点击 WiFi配置；
 //  *
@@ -298,25 +298,34 @@ void Task_ParseJSON(void *pvParameters)
 		else if (strcmp(pJSON_Name->valuestring, "SetColor") == 0)
 		{
 			cJSON *pJSON_Value = cJSON_GetObjectItem(pJSON_Payload, "value");
-			if (strcmp(pJSON_Value->valuestring, "Red") == 0)
+			if (cJSON_IsString(pJSON_Value))
 			{
-				light_driver_set_rgb(APK_MAX_COLOR, 0, 0);
+				if (strcmp(pJSON_Value->valuestring, "Red") == 0)
+				{
+					light_driver_set_rgb(APK_MAX_COLOR, 0, 0);
+				}
+				else if (strcmp(pJSON_Value->valuestring, "Green") == 0)
+				{
+					light_driver_set_rgb(0, APK_MAX_COLOR, 0);
+				}
+				else if (strcmp(pJSON_Value->valuestring, "Blue") == 0)
+				{
+					light_driver_set_rgb(0, 0, APK_MAX_COLOR);
+				}
+				else if (strcmp(pJSON_Value->valuestring, "Yellow") == 0)
+				{
+					light_driver_set_rgb(APK_MAX_COLOR, APK_MAX_COLOR, 0);
+				}
+				else if (strcmp(pJSON_Value->valuestring, "White") == 0)
+				{
+					light_driver_set_rgb(APK_MAX_COLOR, APK_MAX_COLOR, APK_MAX_COLOR);
+				}
 			}
-			else if (strcmp(pJSON_Value->valuestring, "Green") == 0)
+			else if (cJSON_IsArray(pJSON_Value))
 			{
-				light_driver_set_rgb(0, APK_MAX_COLOR, 0);
-			}
-			else if (strcmp(pJSON_Value->valuestring, "Blue") == 0)
-			{
-				light_driver_set_rgb(0, 0, APK_MAX_COLOR);
-			}
-			else if (strcmp(pJSON_Value->valuestring, "Yellow") == 0)
-			{
-				light_driver_set_rgb(APK_MAX_COLOR, APK_MAX_COLOR, 0);
-			}
-			else if (strcmp(pJSON_Value->valuestring, "White") == 0)
-			{
-				light_driver_set_rgb(APK_MAX_COLOR, APK_MAX_COLOR, APK_MAX_COLOR);
+				light_driver_set_rgb(cJSON_GetArrayItem(pJSON_Value, 0),
+									 cJSON_GetArrayItem(pJSON_Value, 1),
+									 cJSON_GetArrayItem(pJSON_Value, 2));
 			}
 		}
 		//end SetColor
@@ -780,7 +789,7 @@ void app_main(void)
 	//获取从未使用过的最小内存
 	printf("     esp_get_minimum_free_heap_size : %d  \n", esp_get_minimum_free_heap_size());
 	//获取芯片的内存分布，返回值具体见结构体 flash_size_map
-	printf("     system_get_flash_size_map(): %d \n", system_get_flash_size_map());
+	printf("     system_get_flash_size_map(): %d \n", CHANNLE_PWM_TOTAL);
 	//获取mac地址（station模式）
 	uint8_t mac[6];
 	esp_read_mac(mac, ESP_MAC_WIFI_STA);
@@ -800,7 +809,7 @@ void app_main(void)
 	//外设初始化
 	xTaskCreate(TaskButton, "TaskButton", 1024, NULL, 6, NULL);
 	pwm_init_data();
-	light_driver_set_switch(0);
+	light_driver_set_switch(1);
 
 	tcpip_adapter_init();
 	wifi_event_group = xEventGroupCreate();

@@ -41,9 +41,9 @@
 
 #ifdef  CONFIG_AITHINKER_NODEMCU_1_2_ESP8266 //安信可 NodeMCU 开发板 带RGB
 #define CHANNLE_PWM_TOTAL 3
-#define PWM_RED_OUT_IO_NUM 5  // 4
-#define PWM_GREEN_OUT_IO_NUM 12  //5
-#define PWM_BLUE_OUT_IO_NUM 13 //2
+#define PWM_RED_OUT_IO_NUM 4 //红色灯珠
+#define PWM_GREEN_OUT_IO_NUM 5 //绿色灯珠
+#define PWM_BLUE_OUT_IO_NUM 2//蓝色灯珠
 #elif   CONFIG_AITHINKER_GIZWITS_ESP8266 //安信可-机智云开发板 带RGB
 #define CHANNLE_PWM_TOTAL 3
 #define PWM_RED_OUT_IO_NUM 15

@@ -1,19 +1,26 @@
 
  *    基于 esp-idf esp8266芯片 rtos3.0 sdk 开发，配合 xClouds-php 可实现微信配网绑定控制 + 天猫精灵语音控制 + 小爱同学控制；
  * 
+ *   实现红绿蓝七彩控制
+ *
  *   这是esp-touch或 微信airkiss配网以及近场发现的功能和连接MQTT服务器的的demo示范！
  * 
- *   LED接线参考 XPWM.h 头文件定义，按键接线 GPIO0 下降沿有效；
- *   按键长按 ，进去配网模式，微信扫码下面微信公众号二维码点击 添加设备；
+ *   快速开关三次，设备将会渐变效果，进去配网模式；
+ *   按键长按 ，进去配网模式，微信关注安信可科技微信公众号二维码点击 应用开发---Aiclouds 添加设备；
  *
  *    有任何技术问题邮箱： 870189248@qq.com
  *    @team: Ai-Thinker Open Team 安信可开源团队-半颗心脏
- 
 
- 
-<p align="center">
-  <img src="../../docs/_static/wechat.jpeg" width="300px" height="300px" alt="Banner" />
-</p>
+ ## 接线方式
+
+ - LED接线如下，高电平有效！
+
+```
+#define PWM_RED_OUT_IO_NUM 4 //红色灯珠
+#define PWM_GREEN_OUT_IO_NUM 5 //绿色灯珠
+#define PWM_BLUE_OUT_IO_NUM 2//蓝色灯珠
+ ```
+
  
 
 ## 上报指令

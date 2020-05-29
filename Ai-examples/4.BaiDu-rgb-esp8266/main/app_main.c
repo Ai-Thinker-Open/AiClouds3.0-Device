@@ -153,7 +153,7 @@ static void post_data_to_clouds()
 
 	//上报pwm百分比，作为参数给服务器
 	cJSON_AddNumberToObject(pRoot, "Red", red);
-	cJSON_AddNumberToObject(pRoot, "Gren", green);
+	cJSON_AddNumberToObject(pRoot, "Green", green);
 	cJSON_AddNumberToObject(pRoot, "Blue", blue);
 
 	//格式化为字符串

@@ -56,3 +56,11 @@
 
 - 点击访问下载：https://github.com/xuhongv/WCMiniColorPicker
 
+
+### 第三步
+
+- 在现有的包导入 mqtt 功能。
+- 设备端下载：https://gitee.com/xuhongv/AiClouds3.0-Device
+- 如何真机调试
+
+

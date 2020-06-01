@@ -2,7 +2,7 @@
 # Component Makefile
 #
 ifdef IS_BOOTLOADER_BUILD
-COMPONENT_OBJS := source/ets_printf.o
+COMPONENT_OBJS := source/ets_printf.o source/crc.o
 COMPONENT_SRCDIRS := source
 else
 COMPONENT_ADD_INCLUDEDIRS += include
@@ -13,13 +13,14 @@ LIBS ?=
 ifndef CONFIG_NO_BLOBS
 ifndef CONFIG_ESP8266_WIFI_DEBUG_LOG_ENABLE
 LIBS += gcc hal core net80211 \
-        phy rtc clk pp smartconfig ssc wpa espnow wps wpa2
+        phy rtc clk pp smartconfig ssc espnow wps wpa2
 else
 LIBS += gcc hal core_dbg net80211_dbg \
-        phy rtc clk pp_dbg smartconfig ssc wpa_dbg espnow_dbg wps_dbg wpa2_dbg
+        phy rtc clk pp_dbg smartconfig ssc espnow_dbg wps_dbg wpa2_dbg
 endif
 endif
 
+CFLAGS += -DUSING_IBUS_FASTER_GET
 #Linker scripts used to link the final application.
 #Warning: These linker scripts are only used when the normal app is compiled; the bootloader
 #specifies its own scripts.

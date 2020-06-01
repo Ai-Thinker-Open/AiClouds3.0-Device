@@ -203,7 +203,7 @@ esp_err_t ledc_fade_up(ledc_channel_t channel, uint8_t* flag)
             p_ledc_obj[channel]->duty_p += duty_value;
         }
         pwm_set_duty(channel, p_ledc_obj[channel]->duty_p);
-        //pwm_start();
+        pwm_start();
         i[channel]++;
         if (i[channel] == 100) {
             i[channel] = 0;
@@ -235,7 +235,7 @@ esp_err_t ledc_fade_down(ledc_channel_t channel, uint8_t* flag)
             p_ledc_obj[channel]->duty_p -= duty_value;
         }
         pwm_set_duty(channel, p_ledc_obj[channel]->duty_p);
-        //pwm_start();
+        pwm_start();
         i[channel]++;
         if (i[channel] == 100) {
             i[channel] = 0;
@@ -271,7 +271,6 @@ static void ledc_task(void* pvParameters)
             }
         }
         xTaskResumeAll();
-        pwm_start();
         vTaskDelay(LEDC_STEP_TIME / portTICK_PERIOD_MS);
     }
     vTaskDelete(NULL);

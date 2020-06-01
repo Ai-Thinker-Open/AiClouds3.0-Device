@@ -50,10 +50,10 @@
 #define PWM_GREEN_OUT_IO_NUM 12
 #define PWM_BLUE_OUT_IO_NUM 13
 #else
-#define CHANNLE_PWM_TOTAL 5
+#define CHANNLE_PWM_TOTAL 3
 #define PWM_RED_OUT_IO_NUM 5
-#define PWM_GREEN_OUT_IO_NUM 15
-#define PWM_BLUE_OUT_IO_NUM 14
+#define PWM_GREEN_OUT_IO_NUM 12
+#define PWM_BLUE_OUT_IO_NUM 13
 #endif
 
 //是否带有记忆功能

@@ -228,6 +228,7 @@ void Task_ParseJSON(void *pvParameters)
 			cJSON *pJSON_Value = cJSON_GetObjectItem(pJSON_Payload, "value");
 			if (cJSON_IsString(pJSON_Value))
 			{
+				light_driver_set_color_mode(pJSON_Value->valuestring);
 				if (strcmp(pJSON_Value->valuestring, "Red") == 0)
 				{
 					light_driver_set_rgb(APK_MAX_COLOR, 0, 0);
@@ -247,6 +248,10 @@ void Task_ParseJSON(void *pvParameters)
 				else if (strcmp(pJSON_Value->valuestring, "White") == 0)
 				{
 					light_driver_set_rgb(APK_MAX_COLOR, APK_MAX_COLOR, APK_MAX_COLOR);
+				}
+				else if (strcmp(pJSON_Value->valuestring, "Orange") == 0)
+				{
+					light_driver_set_rgb(APK_MAX_COLOR, 128, 10);
 				}
 			}
 			else if (cJSON_IsArray(pJSON_Value))
@@ -506,7 +511,7 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 		//开启json解析线程
 		if (mHandlerParseJSON == NULL)
 		{
-			xTaskCreate(Task_ParseJSON, "Task_ParseJSON", 1024*2, NULL, 3, &mHandlerParseJSON);
+			xTaskCreate(Task_ParseJSON, "Task_ParseJSON", 1024 * 2, NULL, 3, &mHandlerParseJSON);
 		}
 
 		if (ret != pdPASS)
@@ -714,22 +719,21 @@ void app_main(void)
 	clean_flag_quickBoot();
 }
 
-
 void app_main2()
 {
 
-     ESP_LOGI(TAG, "cJSON_Version() : %s", cJSON_Version());
+	ESP_LOGI(TAG, "cJSON_Version() : %s", cJSON_Version());
 
-     int hexPost[3] = {168, 189, 965};
-     cJSON *pRoot = cJSON_CreateObject();
+	int hexPost[3] = {168, 189, 965};
+	cJSON *pRoot = cJSON_CreateObject();
 
-    cJSON_AddNumberToObject(pRoot, "fw", 1);
-    cJSON_AddItemToObject(pRoot, "data", cJSON_CreateIntArray(hexPost, 3));
+	cJSON_AddNumberToObject(pRoot, "fw", 1);
+	cJSON_AddItemToObject(pRoot, "data", cJSON_CreateIntArray(hexPost, 3));
 
-    char *s = cJSON_Print(pRoot);
+	char *s = cJSON_Print(pRoot);
 
-    ESP_LOGI(TAG, " cJSON_Print : %s", s);
+	ESP_LOGI(TAG, " cJSON_Print : %s", s);
 
-    cJSON_free((void *)s);
-    cJSON_Delete(pRoot);
+	cJSON_free((void *)s);
+	cJSON_Delete(pRoot);
 }

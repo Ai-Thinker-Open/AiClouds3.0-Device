@@ -106,13 +106,6 @@ static void post_data_to_clouds()
 	if (!isConnect2Server)
 		return;
 
-	char colorMode[10];
-
-	if (light_driver_get_color_mode(colorMode) != ESP_OK)
-	{
-		sprintf(colorMode, "%s", "NULL");
-	}
-
 	cJSON *pRoot = cJSON_CreateObject();
 	cJSON *pHeader = cJSON_CreateObject();
 	cJSON *pAttr = cJSON_CreateArray();
@@ -148,18 +141,31 @@ static void post_data_to_clouds()
 
 	//颜色
 	cJSON *pAttr_color = cJSON_CreateObject();
+	uint8_t red = 0, green = 0, blue = 0;
+	light_driver_get_rgb(&red, &green, &blue);
+	const int list[] = {red, green, blue};
+	char colorMode[10];
+	ESP_LOGI(TAG, "get rgb: %d : %d : %d .", red, green, blue);
+
 	cJSON_AddStringToObject(pAttr_color, "name", "color");
-	cJSON_AddStringToObject(pAttr_color, "value", colorMode);
+	if (light_driver_get_color_mode(colorMode) != ESP_OK)
+	{
+		cJSON_AddNullToObject(pAttr_color, "value");
+	}
+	else
+	{
+		cJSON_AddStringToObject(pAttr_color, "value", colorMode);
+	}
+	cJSON_AddItemToObject(pAttr_color, "rgb", cJSON_CreateIntArray(list, 3));
 	cJSON_AddItemToArray(pAttr, pAttr_color);
 
 	cJSON_AddItemToObject(pRoot, "header", pHeader);
 	cJSON_AddItemToObject(pRoot, "attr", pAttr);
-
 	char *s = cJSON_Print(pRoot);
 
 	ESP_LOGI(TAG, "post_data_to_clouds topic end : %s", MqttTopicPub);
 	ESP_LOGI(TAG, "post_data_to_clouds payload : %s", s);
-	esp_mqtt_client_publish(client, MqttTopicPub, s, strlen(s), 1, 0);
+	//esp_mqtt_client_publish(client, MqttTopicPub, s, strlen(s), 1, 0);
 	cJSON_free((void *)s);
 	cJSON_Delete(pRoot);
 }
@@ -176,7 +182,7 @@ void Task_ParseJSON(void *pvParameters)
 	{
 		struct __User_data *pMqttMsg;
 
-		printf("[%d] Task_ParseJSON_Message xQueueReceive wait ... \n", esp_get_free_heap_size());
+		printf("Task_ParseJSON_Message xQueueReceive wait [%d]  ... \n", esp_get_free_heap_size());
 		xQueueReceive(ParseJSONQueueHandler, &pMqttMsg, portMAX_DELAY);
 
 		////首先整体判断是否为一个json格式的数据
@@ -403,8 +409,8 @@ esp_err_t MqttCloudsCallBack(esp_mqtt_event_handle_t event)
 		//服务器下发消息到本地成功接收回调
 	case MQTT_EVENT_DATA:
 	{
-		printf("TOPIC=%.*s \r\n", event->topic_len, event->topic);
-		printf("DATA=%.*s \r\n\r\n", event->data_len, event->data);
+		// printf("TOPIC=%.*s \r\n", event->topic_len, event->topic);
+		// printf("DATA=%.*s \r\n\r\n", event->data_len, event->data);
 		//发送数据到队列
 		struct __User_data *pTmper;
 		sprintf(user_data.allData, "%s", event->data);

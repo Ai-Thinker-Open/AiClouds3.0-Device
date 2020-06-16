@@ -1,0 +1,15 @@
+menu "AiThinker Configuration"
+
+choice ESP8266_BOARD
+    prompt "5 Ways PWM Board"
+    default AITHINKER_GIZWITS_ESP8266
+config AITHINKER_NODEMCU_1_2_ESP8266
+    bool "AiThinker 1.2 NodeMCU"
+config AITHINKER_NODEMCU_1_1_ESP8266
+    bool "AiThinker 1.1 NodeMCU"
+config AITHINKER_GIZWITS_ESP8266
+    bool "AiThinker GizWits esp8266"
+endchoice
+
+endmenu
+

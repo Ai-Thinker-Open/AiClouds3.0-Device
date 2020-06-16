@@ -135,7 +135,7 @@ esp_err_t light_driver_set_ctb(const int brightness, const int color_temperature
     int outBrightnessChannle = 8192 * outCW / 100;
     int outColortempChannle = 8192 * outWW / 100;
 
-    //printf(" light_driver_set_ctb=> outBrightnessChannle : %d , outColortempChannle %d \n", outBrightnessChannle, outColortempChannle);
+    printf("\n light_driver_set_ctb=> %d- outBrightnessChannle : %d , %d-outColortempChannle %d \n", brightness, outBrightnessChannle, color_temperature, outColortempChannle);
 
     dev_status.Brightness = brightness;
     dev_status.Colortemp = color_temperature;
@@ -231,6 +231,7 @@ esp_err_t light_driver_set_mode(uint8_t mode)
 }
 esp_err_t light_driver_set_brightness(uint8_t brightness)
 {
+    dev_status.Colortemp = dev_status.Colortemp < APK_MIN_COLORTEMP ? APK_MIN_COLORTEMP : dev_status.Colortemp;
     light_driver_set_ctb(brightness, dev_status.Colortemp);
     return ESP_OK;
 }
@@ -288,15 +289,16 @@ esp_err_t light_driver_set_rgb(const uint8_t red, const uint8_t green, const uin
         dev_status.Power = 1;
     }
 
-    printf("dev_status.Power %d \n",dev_status.Power);
+    printf("dev_status.Power %d \n", dev_status.Power);
 
     int outRedChannle = 8192 * red / APK_MAX_COLOR;
     int outGreenChannle = 8192 * green / APK_MAX_COLOR;
     int outBlueChannle = 8192 * blue / APK_MAX_COLOR;
 
-    printf("outRedChannle: %d \n", outRedChannle);
-    printf("outGreenChannle: %d \n", outGreenChannle);
-    printf("outBlueChannle: %d\n\n", outBlueChannle);
+    printf("%d outRedChannle: %d \n", red, outRedChannle);
+    printf("%d outGreenChannle: %d \n", green, outGreenChannle);
+    printf("%d outBlueChannle: %d\n\n", blue, outBlueChannle);
+
     if (CHANNLE_PWM_TOTAL == 3)
     {
         ledc_set_fade_with_time(LEDC_MODE, 0, outRedChannle, LEDC_FADE_TIME);

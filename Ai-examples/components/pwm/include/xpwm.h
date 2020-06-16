@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2019-11-21 15:59:45
- * @LastEditTime: 2020-05-05 20:50:39
+ * @LastEditTime: 2020-06-11 09:08:45
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \ESP8266_RTOS_SDK\mine\ESP8266ForMqttPWM\components\pwm\include\xpwm.h
@@ -36,14 +36,14 @@
 //pwm gpio口配置： 2表示冷暖灯， 3表示RGB灯，5表示冷暖RGB灯
 //@如果是仅有RGB，修改 PWM_RED_OUT_IO_NUM，PWM_GREEN_OUT_IO_NUM，PWM_BLUE_OUT_IO_NUM这三个即可
 
-#define PWM_CW_OUT_IO_NUM 12
+#define PWM_CW_OUT_IO_NUM 5
 #define PWM_WW_OUT_IO_NUM 13
 
 #ifdef  CONFIG_AITHINKER_NODEMCU_1_2_ESP8266 //安信可 NodeMCU 开发板 带RGB
-#define CHANNLE_PWM_TOTAL 3
+#define CHANNLE_PWM_TOTAL 5
 #define PWM_RED_OUT_IO_NUM 4 //红色灯珠
-#define PWM_GREEN_OUT_IO_NUM 5 //绿色灯珠
-#define PWM_BLUE_OUT_IO_NUM 2//蓝色灯珠
+#define PWM_GREEN_OUT_IO_NUM 12 //绿色灯珠
+#define PWM_BLUE_OUT_IO_NUM 14//蓝色灯珠
 #elif   CONFIG_AITHINKER_GIZWITS_ESP8266 //安信可-机智云开发板 带RGB
 #define CHANNLE_PWM_TOTAL 3
 #define PWM_RED_OUT_IO_NUM 15

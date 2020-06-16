@@ -59,6 +59,8 @@ static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event)
 		ESP_LOGI(TAG, "MQTT_EVENT_PUBLISHED, msg_id=%d", event->msg_id);
 		break;
 	case MQTT_EVENT_DATA:
+	    printf("TOPIC=%.*s \r\n", event->topic_len, event->topic);
+		printf("DATA=%.*s \r\n\r\n", event->data_len, event->data);
 		ESP_LOGI(TAG, "MQTT_EVENT_DATA");
 		{
 			////首先整体判断是否为一个json格式的数据

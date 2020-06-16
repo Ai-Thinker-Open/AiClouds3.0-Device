@@ -403,7 +403,8 @@ esp_err_t MqttCloudsCallBack(esp_mqtt_event_handle_t event)
 		//服务器下发消息到本地成功接收回调
 	case MQTT_EVENT_DATA:
 	{
-		ESP_LOGI(TAG, " xQueueReceive  data [%s] \n", event->data);
+		printf("TOPIC=%.*s \r\n", event->topic_len, event->topic);
+		printf("DATA=%.*s \r\n\r\n", event->data_len, event->data);
 		//发送数据到队列
 		struct __User_data *pTmper;
 		sprintf(user_data.allData, "%s", event->data);
@@ -518,7 +519,7 @@ static void TaskCreatSocket(void *pvParameters)
 
 				lan_buf_len = sizeof(lan_buf);
 				//开始组装打包
-				packret = airkiss_lan_pack(AIRKISS_LAN_SSDP_NOTIFY_CMD, ACCOUNT_ID_XUHONG, tx_buffer, 0, 0, lan_buf, &lan_buf_len, &akconf);
+				packret = airkiss_lan_pack(AIRKISS_LAN_SSDP_NOTIFY_CMD, ACCOUNT_ID, tx_buffer, 0, 0, lan_buf, &lan_buf_len, &akconf);
 				if (packret != AIRKISS_LAN_PAKE_READY)
 				{
 					ESP_LOGE(TAG, "Pack lan packet error!");

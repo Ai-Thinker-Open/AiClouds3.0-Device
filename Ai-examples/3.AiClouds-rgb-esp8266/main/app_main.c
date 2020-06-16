@@ -311,7 +311,8 @@ esp_err_t MqttCloudsCallBack(esp_mqtt_event_handle_t event)
 		//服务器下发消息到本地成功接收回调
 	case MQTT_EVENT_DATA:
 	{
-		ESP_LOGI(TAG, " xQueueReceive  data [%s] \n", event->data);
+		printf("TOPIC=%.*s \r\n", event->topic_len, event->topic);
+		printf("DATA=%.*s \r\n\r\n", event->data_len, event->data);
 		//发送数据到队列
 		struct __User_data *pTmper;
 		sprintf(user_data.allData, "%s", event->data);
@@ -717,23 +718,4 @@ void app_main(void)
 
 	vTaskDelay(4000 / portTICK_RATE_MS);
 	clean_flag_quickBoot();
-}
-
-void app_main2()
-{
-
-	ESP_LOGI(TAG, "cJSON_Version() : %s", cJSON_Version());
-
-	int hexPost[3] = {168, 189, 965};
-	cJSON *pRoot = cJSON_CreateObject();
-
-	cJSON_AddNumberToObject(pRoot, "fw", 1);
-	cJSON_AddItemToObject(pRoot, "data", cJSON_CreateIntArray(hexPost, 3));
-
-	char *s = cJSON_Print(pRoot);
-
-	ESP_LOGI(TAG, " cJSON_Print : %s", s);
-
-	cJSON_free((void *)s);
-	cJSON_Delete(pRoot);
 }

@@ -121,3 +121,28 @@ paylaod：
 	}
 }
 ```
+
+--------------
+
+## OTA指令
+
+- 远程升级ota
+- 主题：/aithinker/${设备mac地址}/devSub
+- 其中 value 是一个新固件完整的地址
+
+
+```
+{
+    "header": {
+        "name": "FOTA",
+        "namespace": "AliGenie.Iot.DeviceCenter.Control",
+        "payLoadVersion ": 1 	
+    },
+    "payload": {
+        "attribute": "ota",
+        "deviceId": "9",
+        "deviceType": "light",
+        "value": "http://xxxx.com/files/esp8266/smartconfig_mqtt.bin" 	
+    } 
+}
+```

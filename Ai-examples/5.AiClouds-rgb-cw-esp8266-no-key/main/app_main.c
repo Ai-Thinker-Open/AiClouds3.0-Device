@@ -41,6 +41,9 @@
 #include "quickFactory.h"
 #include <lwip/netdb.h>
 #include "xpwm.h"
+#include "esp_ota_ops.h"
+#include "esp_http_client.h"
+#include "esp_https_ota.h"
 
 void TaskSmartConfigAirKiss2Net(void *parm);
 
@@ -86,7 +89,7 @@ int sock_fd;
 //设备信息
 #define DEVICE_TYPE "rgbLight"
 //设备信息
-#define FW_VERSION "1.0"
+#define FW_VERSION "1.2"
 //mqtt
 static esp_mqtt_client_handle_t client;
 
@@ -95,12 +98,74 @@ bool isConnect2Server = false;
 
 char udp_msg[512]; //固定的本地广播数据
 
+/******************************* OTA  Start*******************************/
+esp_err_t _http_event_handler(esp_http_client_event_t *evt)
+{
+	switch (evt->event_id)
+	{
+	case HTTP_EVENT_ERROR:
+		ESP_LOGD(TAG, "HTTP_EVENT_ERROR");
+		break;
+	case HTTP_EVENT_ON_CONNECTED:
+		ESP_LOGD(TAG, "HTTP_EVENT_ON_CONNECTED");
+		break;
+	case HTTP_EVENT_HEADER_SENT:
+		ESP_LOGD(TAG, "HTTP_EVENT_HEADER_SENT");
+		break;
+	case HTTP_EVENT_ON_HEADER:
+		ESP_LOGD(TAG, "HTTP_EVENT_ON_HEADER, key=%s, value=%s", evt->header_key, evt->header_value);
+		break;
+	case HTTP_EVENT_ON_DATA:
+		ESP_LOGD(TAG, "HTTP_EVENT_ON_DATA, len=%d", evt->data_len);
+		break;
+	case HTTP_EVENT_ON_FINISH:
+		ESP_LOGD(TAG, "HTTP_EVENT_ON_FINISH");
+		break;
+	case HTTP_EVENT_DISCONNECTED:
+		ESP_LOGD(TAG, "HTTP_EVENT_DISCONNECTED");
+		break;
+	}
+	return ESP_OK;
+}
+
+void TaskOta(void *pvParameter)
+{
+
+	char *url = (char *)pvParameter;
+	ESP_LOGI(TAG, "Starting OTA url: %s", url);
+
+	esp_http_client_config_t config = {
+		.url = url,
+		.event_handler = _http_event_handler,
+	};
+
+	esp_err_t ret = esp_https_ota(&config);
+
+	if (ret == ESP_OK)
+	{
+		esp_restart();
+	}
+	else
+	{
+		ESP_LOGE(TAG, "Firmware Upgrades Failed");
+		esp_restart();
+	}
+	while (1)
+	{
+		vTaskDelay(1000 / portTICK_PERIOD_MS);
+	}
+
+	vTaskDelete(NULL);
+}
+
+/******************************* OTA  End*******************************/
+
 /* 
  * @Description: 上报数据到服务器
  * @param: null
  * @return: 
 */
-static void post_data_to_clouds()
+void post_data_to_clouds(void *p)
 {
 
 	if (!isConnect2Server)
@@ -143,11 +208,10 @@ static void post_data_to_clouds()
 	cJSON *pAttr_color = cJSON_CreateObject();
 	uint8_t red = 0, green = 0, blue = 0;
 	light_driver_get_rgb(&red, &green, &blue);
-	const int list[] = {red, green, blue};
 	char colorMode[10];
-	ESP_LOGI(TAG, "get rgb: %d : %d : %d .", red, green, blue);
-
 	cJSON_AddStringToObject(pAttr_color, "name", "color");
+	int list[] = {red, green, blue};
+	cJSON_AddItemToObject(pAttr_color, "rgb", cJSON_CreateIntArray(list, 3));
 	if (light_driver_get_color_mode(colorMode) != ESP_OK)
 	{
 		cJSON_AddNullToObject(pAttr_color, "value");
@@ -156,7 +220,7 @@ static void post_data_to_clouds()
 	{
 		cJSON_AddStringToObject(pAttr_color, "value", colorMode);
 	}
-	cJSON_AddItemToObject(pAttr_color, "rgb", cJSON_CreateIntArray(list, 3));
+
 	cJSON_AddItemToArray(pAttr, pAttr_color);
 
 	cJSON_AddItemToObject(pRoot, "header", pHeader);
@@ -165,9 +229,11 @@ static void post_data_to_clouds()
 
 	ESP_LOGI(TAG, "post_data_to_clouds topic end : %s", MqttTopicPub);
 	ESP_LOGI(TAG, "post_data_to_clouds payload : %s", s);
-	//esp_mqtt_client_publish(client, MqttTopicPub, s, strlen(s), 1, 0);
+	esp_mqtt_client_publish(client, MqttTopicPub, s, strlen(s), 1, 0);
 	cJSON_free((void *)s);
 	cJSON_Delete(pRoot);
+
+	vTaskDelete(NULL);
 }
 
 /* 
@@ -199,7 +265,6 @@ void Task_ParseJSON(void *pvParameters)
 		if (!pJSON_Header)
 		{
 			printf("[SY] Task_ParseJSON_Message pJSON_Header not json ... \n");
-			post_data_to_clouds(client, MqttTopicPub);
 
 			goto __cJSON_Delete;
 		}
@@ -225,6 +290,16 @@ void Task_ParseJSON(void *pvParameters)
 			printf("[SY] Task_ParseJSON_Message cjsonValue not json ... \n");
 			goto __cJSON_Delete;
 		}
+
+		//start FOTA
+		if (strcmp(pJSON_Name->valuestring, "FOTA") == 0)
+		{
+			cJSON *pJSON_Value = cJSON_GetObjectItem(pJSON_Payload, "value");
+			char *url = pJSON_Value->valuestring;
+			// FOTA ！远程升级
+			xTaskCreate(TaskOta, "TaskOta", 1024 * 4, (void *)url, 5, NULL);
+		}
+		//end FOTA
 
 		// //start TurnOn
 		if (strcmp(pJSON_Name->valuestring, "TurnOn") == 0)
@@ -363,7 +438,7 @@ void Task_ParseJSON(void *pvParameters)
 		}
 		//end SetColor
 
-		post_data_to_clouds();
+		xTaskCreate(post_data_to_clouds, "post_data_to_clouds", 1024 * 2, NULL, 6, NULL);
 
 	__cJSON_Delete:
 		cJSON_Delete(pJsonRoot);
@@ -388,6 +463,7 @@ esp_err_t MqttCloudsCallBack(esp_mqtt_event_handle_t event)
 		ESP_LOGI(TAG, "[APP] Free memory: %d bytes", esp_get_free_heap_size());
 		//post_data_to_clouds();
 		isConnect2Server = true;
+		xTaskCreate(post_data_to_clouds, "post_data_to_clouds", 1024 * 2, NULL, 6, NULL);
 		break;
 		//断开连接回调
 	case MQTT_EVENT_DISCONNECTED:

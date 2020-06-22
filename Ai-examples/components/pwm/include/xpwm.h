@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2019-11-21 15:59:45
- * @LastEditTime: 2020-06-11 09:08:45
+ * @LastEditTime: 2020-06-19 11:49:38
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \ESP8266_RTOS_SDK\mine\ESP8266ForMqttPWM\components\pwm\include\xpwm.h
@@ -51,9 +51,9 @@
 #define PWM_BLUE_OUT_IO_NUM 13
 #else
 #define CHANNLE_PWM_TOTAL 3
-#define PWM_RED_OUT_IO_NUM 5
-#define PWM_GREEN_OUT_IO_NUM 12
-#define PWM_BLUE_OUT_IO_NUM 13
+#define PWM_RED_OUT_IO_NUM 4
+#define PWM_GREEN_OUT_IO_NUM 5
+#define PWM_BLUE_OUT_IO_NUM 2
 #endif
 
 //是否带有记忆功能
